@@ -1,0 +1,258 @@
+MORROWIND OPENMW MOD DOWNLOAD LIST
+===================================
+All mods are from Nexus Mods (morrowind) unless noted.
+Format: [STATUS] NUMBER - Name | Nexus ID | URL
+
+NOTE: Nexus requires login to download. Log in at https://www.nexusmods.com
+      then click "Manual Download" on each mod's Files tab.
+      If you have Nexus Premium + API key, automated download is possible (see below).
+
+================================================================================
+TIER 1: MUST-INSTALL BACKBONE
+================================================================================
+
+[DOWNLOADED] 001 - Patch for Purists
+  Nexus ID: 45096 | Version: 5.0.6
+  URL: https://www.nexusmods.com/morrowind/mods/45096?tab=files
+  Archive: Patch for Purists-45096-5-0-6-1765845457.7z
+  Notes: Pure bug fix mod. Load first after base game.
+
+[DOWNLOADED] 002 - Unofficial Morrowind Official Plugins Patched (UMOPP)
+  Nexus ID: 43931 | Version: 3.2.1
+  URL: https://www.nexusmods.com/morrowind/mods/43931?tab=files
+  Archive: Unofficial Morrowind Official Plugins Patched-43931-3-2-1-1709596838.7z
+  Notes: Download "UMOPP Main" and "UMOPP Merged and Compatibility Files".
+         Uses FOMOD installer — pick the plugins you want manually.
+         For OpenMW just grab the merged version + compatibility esps.
+
+[DOWNLOADED] 003 - Expansion Delay
+  Nexus ID: 47588 | Version: 1.3
+  URL: https://www.nexusmods.com/morrowind/mods/47588?tab=files
+  Archive: Expansion Delay-47588-1-3-1612481103.zip
+  Notes: Single ESP. Delays Tribunal/Bloodmoon hooks so they don't ambush you
+         at level 1. Essential QoL fix.
+
+[DOWNLOADED] 004 - Morrowind Optimization Patch (MOP)
+  Nexus ID: 45384 | Version: 1.18.0
+  URL: https://www.nexusmods.com/morrowind/mods/45384?tab=files
+  Archive: Morrowind Optimization Patch-45384-1-18-0-1751572864.7z
+  Notes: Mesh optimizations for better performance.
+
+[DOWNLOADED] 005 - Tamriel Data (HD)
+  Nexus ID: 44537 | Version: 25.05
+  URL: https://www.nexusmods.com/morrowind/mods/44537?tab=files
+  Archive: Tamriel Data (HD)-44537-25-05-1746144713.7z
+  Notes: REQUIRED by Tamriel Rebuilt and many other mods.
+         Download the HD version. Contains BSA — needs fallback-archive= line.
+         Register BSA: fallback-archive=PT_Data.bsa
+                       fallback-archive=TR_Data.bsa
+
+[DOWNLOADED] 006 - Tamriel Rebuilt
+  Nexus ID: 42145 | Version: 25.08.12
+  URL: https://www.nexusmods.com/morrowind/mods/42145?tab=files
+  Archive: Tamriel Rebuilt 25.08.12-42145-25-08-12-1755040619.7z
+  Notes: Massive mainland expansion. Requires Tamriel Data.
+
+================================================================================
+TIER 2: VANILLA-PLUS UPGRADES
+================================================================================
+
+[DOWNLOADED] 101 - Graphic Herbalism - MWSE and OpenMW Edition
+  Nexus ID: 46599 | Version: 1.04
+  URL: https://www.nexusmods.com/morrowind/mods/46599?tab=files
+  Archive: Graphic Herbalism MWSE - OpenMW-46599-1-04-1558643353.7z
+  Notes: For OpenMW you ONLY need the meshes, not the MWSE scripts.
+         Download the main file. OpenMW has native graphic herbalism built in.
+         Load GH meshes AFTER MOP and any flora replacers.
+
+[DOWNLOADED] 102 - Harvest Lights (OpenMW)
+  URL: https://modding-openmw.gitlab.io/harvest-lights/
+  Archive: harvest-lights.zip
+  Notes: OpenMW-specific Lua mod. NOT on Nexus — download from GitLab page above.
+         Makes harvested light-producing plants dim when picked.
+
+[DOWNLOADED] 103 - Weapon Sheathing
+  Nexus ID: 46069 | Version: 1.6
+  URL: https://www.nexusmods.com/morrowind/mods/46069?tab=files
+  Archive: WeaponSheathing1.6-OpenMW-46069-1-6-1565439130.7z
+  Notes: For OpenMW: enable weapon sheathing in Launcher → Advanced → Visuals.
+         Just need the mesh assets, not MWSE scripts.
+
+[DOWNLOADED] 104 - Project Atlas
+  Nexus ID: 45399
+  URL: https://www.nexusmods.com/morrowind/mods/45399?tab=files
+  Archive: Project Atlas-45399-0-7-5-1747751438.7z
+  Notes: Performance booster. Install AFTER MOP. Also grab the optional
+         MET (Morrowind Enhanced Textures) atlas textures if using MET.
+
+[DOWNLOADED] 105 - Morrowind Enhanced Textures (MET)
+  Nexus ID: 46221 | Version: 6.1
+  URL: https://www.nexusmods.com/morrowind/mods/46221?tab=files
+  Archive: Morrowind Enhanced Textures 6.1-46221-6-1-1698010415.zip
+  Notes: AI-upscaled textures. Load AFTER MOP and PfP.
+
+[DOWNLOADED] 106 - Familiar Faces by Caleb (Updated)
+  Nexus ID: 50093 | Version: 2.1
+  URL: https://www.nexusmods.com/morrowind/mods/50093?tab=files
+  Archive: Familiar Faces-50093-2-1-1678377705.zip
+  Notes: Vanilla-friendly head/hair replacer for all races including beasts.
+         Simple drag + drop. Uses vanilla textures.
+
+================================================================================
+TIER 3: POLISH EXTRAS
+================================================================================
+
+[DOWNLOADED] 201 - OpenMW Containers Animated
+  Nexus ID: 46232
+  URL: https://www.nexusmods.com/morrowind/mods/46232?tab=files
+  Archive: OpenMW Containers Animated-46232-1-2-2-1574060105.zip
+  Notes: Animated container opening/closing for OpenMW.
+
+[DOWNLOADED - WRONG VERSION] 202 - Glow in the Dahrk
+  Nexus ID: 45886 | CURRENT VERSION IS 3.3.0 BUT USE 2.11.2 FOR OPENMW
+  URL: https://www.nexusmods.com/morrowind/mods/45886?tab=files
+  Archive: Glow in the Dahrk-45886-3-3-0-1765851739.7z
+  *** WARNING: Downloaded v3.3.0 but OpenMW needs v2.11.2! ***
+  *** Go to Files tab → Old files → download v2.11.2 instead ***
+  Notes: Windows glow at night.
+         CRITICAL FOR OPENMW: Versions 3.0.0+ use toggling sunrays and interior
+         light mesh features that OpenMW does NOT support yet. The mod author
+         explicitly recommends OpenMW users stay on version 2.11.2 or earlier.
+         On the Files tab, look under "Old files" for v2.11.2.
+
+[DOWNLOADED] 203 - Nords Shut Your Windows
+  Nexus ID: 50087
+  URL: https://www.nexusmods.com/morrowind/mods/50087?tab=files
+  Archive: Nords shut your windows-50087-2-1-1709742311.rar
+  Notes: Companion to Glow in the Dahrk. Nordic-style buildings don't have
+         glass windows, so no glow for them.
+
+[DOWNLOADED] 204 - TrueType Fonts for OpenMW
+  Nexus ID: 46854
+  URL: https://www.nexusmods.com/morrowind/mods/46854?tab=files
+  Archive: Fonts-46854-1-0-1559397215.zip
+  Notes: Better font rendering using TrueType fonts in OpenMW.
+
+[DOWNLOADED] 205 - Cantons on the Global Map
+  Nexus ID: 50534 | Version: 1.1
+  URL: https://www.nexusmods.com/morrowind/mods/50534?tab=files
+  Archive: Cantons_on_the_Global_Map_v1.1-50534-1-1-1639771891.zip
+  Notes: Shows Vivec cantons properly on the world map.
+
+[DOWNLOADED] 206 - Distant Seafloor for OpenMW
+  Nexus ID: 50796 | Version: 2.00
+  URL: https://www.nexusmods.com/morrowind/mods/50796?tab=files
+  Archive: Distant_Seafloor_2.00-50796-2-00-1655819832.zip
+  Notes: OpenMW-specific distant terrain mod.
+
+[DOWNLOADED] 207 - Distant Fixes — Lua Edition (replaces Dynamic Distant Buildings)
+  URL: https://modding-openmw.gitlab.io/distant-fixes-lua-edition/
+  Archive: distant-fixes-lua-edition.zip
+  Notes: OpenMW-specific Lua mod. NOT on Nexus — download from GitLab page above.
+
+================================================================================
+"MORE ALIVE" MODS (MCA REPLACEMENTS)
+================================================================================
+
+DEPENDENCY NOTE: Beautiful Cities of Morrowind (303) requires OAAB_Data.
+Download it alongside Tamriel Data if you plan to use BCOM.
+
+[DOWNLOADED] OAAB_Data (required by BCOM and many modern mods)
+  Nexus ID: 49042 | Version: 2.5.1
+  URL: https://www.nexusmods.com/morrowind/mods/49042?tab=files
+  Archive: OAAB_Data-49042-2-5-1-1764958680.7z
+  Notes: Shared asset library used by BCOM, OAAB mods, and many patches.
+         Install similarly to Tamriel_Data. May include BSAs to register.
+
+[DOWNLOADED] 301 - Repopulated Morrowind
+  Nexus ID: 51174 | Version: 2.6
+  URL: https://www.nexusmods.com/morrowind/mods/51174?tab=files
+  Archive: Repopulated Morrowind-51174-2-6-1703824812.zip
+  Notes: Best modern MCA replacement. Requires TR_Data.
+         Has optional plugins for Tamriel Rebuilt landmass.
+
+[DOWNLOADED] 302 - Repopulated Creatures
+  Nexus ID: 55628 | Version: 1.1
+  URL: https://www.nexusmods.com/morrowind/mods/55628?tab=files
+  Archive: Repopulated Creatures-55628-1-1-1746140786.zip
+  Notes: More creatures in the world. Companion to Repopulated Morrowind.
+
+================================================================================
+"PRETTIER" MODS (STAGE A: WORLD PRETTINESS)
+================================================================================
+
+[NEED] 303 - Beautiful Cities of Morrowind (BCOM)
+  Nexus ID: 49231 | Version: 3.2.9
+  URL: https://www.nexusmods.com/morrowind/mods/49231?tab=files
+  Notes: Major settlement overhaul. Vanilla-plus feeling.
+         REQUIRES: OAAB_Data AND Tamriel_Data (you already have TD).
+         OAAB_Data: https://www.nexusmods.com/morrowind/mods/49042?tab=files
+         Uses FOMOD installer — pick options carefully.
+         Over 90 compatibility patches included in the zip.
+         Also recommends PLOX load order sorter:
+           https://www.nexusmods.com/morrowind/mods/54262
+         DO NOT install on an existing save (start fresh with BCOM).
+
+[NEED] 304 - Normal Maps for Everything
+  Nexus ID: Search "Normal Maps Enhanced" or "Normal Maps" on Nexus Morrowind
+  URL: https://www.nexusmods.com/morrowind/mods/?search=normal+maps
+  Notes: Big visual win for OpenMW — adds normal maps to assets.
+         Multiple packs exist: pick the one matching your texture setup.
+
+[NEED] 305 - Normal Maps for Morrowind / TR / OAAB
+  Nexus ID: Search on Nexus — may be multiple downloads
+  URL: https://www.nexusmods.com/morrowind/mods/?search=normal+maps+tamriel
+  Notes: Extended normal maps package for mainland content.
+         Typically separate downloads for base game, TR, and OAAB assets.
+
+================================================================================
+"PRETTIER" MODS (STAGE B: HEADS/BODIES)
+================================================================================
+
+[NEED] 306 - Bodies and Heads Replacers (FAMILY OF MODS)
+  This is actually multiple mods to investigate:
+
+  306a - MacKom's Humanoid Heads
+    URL: Search "MacKom Heads" on Nexus Morrowind.
+
+  306b - New Hairs for MacKom's Heads
+    URL: Search on Nexus.
+
+  306c - Expressive Eyes for MacKom's Heads
+    URL: Search on Nexus.
+
+  306d - Dandion's Familiar Looks / related patches
+    URL: Search on Nexus.
+
+  306e - TR Heads Replacers / MacKom style TR patches
+    URL: Search on Nexus.
+
+================================================================================
+LEGACY (DO NOT USE)
+================================================================================
+
+[DOWNLOADED - DO NOT USE] Morrowind Comes Alive
+  Nexus ID: 6006
+  Archive: Morrowind Comes Alive-6006-8-2.7z
+  Notes: LEGACY MOD. Superseded by Repopulated Morrowind (301).
+         Keep archive in case needed, but do not install.
+
+================================================================================
+DOWNLOAD SUMMARY
+================================================================================
+
+Already downloaded:  22 archives (all Tier 1, all Tier 2, all Tier 3, OAAB_Data,
+                     Repopulated Morrowind, Repopulated Creatures, plus legacy MCA)
+
+*** ACTION NEEDED ***
+  - 202 Glow in the Dahrk: Downloaded v3.3.0 but MUST use v2.11.2 for OpenMW!
+    Go to https://www.nexusmods.com/morrowind/mods/45886?tab=files → Old files → v2.11.2
+
+Still needed for "big boy" expansion (NOT baseline):
+  - 303 Beautiful Cities of Morrowind (BCOM)
+  - 304 Normal Maps for Everything
+  - 305 Normal Maps for Morrowind / TR / OAAB
+  - 306 MacKom Head/Hair/Eye family
+  - Plus: Vurt's Visual Resurgence, city overhauls, texture upscales (see big boy list)
+
+================================================================================

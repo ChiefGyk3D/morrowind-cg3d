@@ -1,0 +1,17 @@
+# ── Large binary assets (downloaded archives, extracted mod data) ──
+mod_files/
+mods/
+
+# ── Save backups (managed separately via rsync, not git) ──
+saves_backup_*/
+
+# ── mlox is its own git repo (cloned submodule / external tool) ──
+mlox/
+
+# ── OS / editor junk ──
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
