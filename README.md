@@ -38,6 +38,8 @@ Reproducible setup for a modded **OpenMW 0.50** (Flatpak) Morrowind install on L
 | `mod-list.txt` | All mods with Nexus URLs, download status, version notes |
 | `tools_reference.md` | mlox, Flatpak, 7z, and diagnostic command reference |
 | `extract_mods.sh` | Extraction script used to unpack all archives into numbered mod folders |
+| `update_gitlab_mods.sh` | Auto-updates the GitLab-hosted Lua mods (Harvest Lights, Distant Fixes) to their latest tags |
+| `check_setup.sh` | Pre-launch health check — validates every `data=`/`content=`/`fallback-archive=` line against disk |
 | `backup/` | Save-backup automation — rsync snapshot script + systemd user timer (see `backup/README.md`) |
 | `config/` | Ready-to-copy config snippets — tuned `settings.cfg` block, Skies .IV fallbacks |
 | `.gitignore` | Keeps multi-GB mod archives and extracted data out of version control |
@@ -84,10 +86,12 @@ Full details in [`mod_audit_notes.md`](mod_audit_notes.md) and [`version_audit_2
 1. Install OpenMW Flatpak and Steam Morrowind
 2. Download all archives listed in `mod-list.txt` into `mod_files/`
 3. Run `extract_mods.sh` (then apply FOMOD picks per `mod_audit_notes.md`)
-4. Clone mlox: `git clone https://github.com/ZilophosGH/mlox-rfuzzo-fork.git mlox`
+4. Run `update_gitlab_mods.sh` to pull the latest Harvest Lights + Distant Fixes from GitLab
 5. Build `openmw.cfg` per `OPENMW_BUILD_SHEET.md` and `openmw_install_order.md`
-6. Validate load order with mlox (see `tools_reference.md`)
-7. Launch and test each tier before moving to the next
+6. Validate load order with PLOX (see `tools_reference.md`)
+7. Run `check_setup.sh` — fix any errors it reports
+8. Launch and test each tier before moving to the next
+9. Set up save backups: `backup/README.md`
 
 ## Roadmap
 
