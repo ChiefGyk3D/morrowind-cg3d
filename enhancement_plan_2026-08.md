@@ -203,6 +203,9 @@ Per this build's philosophy these are researched but **not** planned:
 
 ## Phase G — settings.cfg tuning (RTX 5070 Ti / 5950X / 64 GB)
 
+A ready-to-copy version of this block lives at
+[`config/settings-tuning.cfg`](config/settings-tuning.cfg) (and the Skies .IV
+fallback lines at [`config/openmw-fallbacks-skies-iv.cfg`](config/openmw-fallbacks-skies-iv.cfg)).
 Apply to `~/.var/app/org.openmw.OpenMW/config/openmw/settings.cfg` **after**
 upgrading to OpenMW 0.51. Keys verified against OpenMW's own settings docs
 (`docs/source/reference/modding/settings/*.rst`, openmw-50 branch); values

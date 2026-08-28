@@ -1,0 +1,9 @@
+[Unit]
+Description=Back up OpenMW saves (local snapshots + optional NAS)
+Documentation=https://github.com/ChiefGyk3D/morrowind-cg3d
+
+[Service]
+Type=oneshot
+ExecStart=%h/mods/morrowind/backup/backup_openmw_saves.sh
+Nice=10
+IOSchedulingClass=idle

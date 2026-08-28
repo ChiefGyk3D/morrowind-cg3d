@@ -91,6 +91,46 @@ python3 mlox.py -f /tmp/mlox_plugins.txt
 
 ---
 
+## Delta Plugin — Leveled-List / Record Merging
+
+**Repo**: https://gitlab.com/portmod/delta-plugin (releases page has prebuilt Linux binaries)
+**Version**: 0.25.3 · Also bundled in the MOMW Tools Pack
+
+The roadmap's "leveled list merging" item. Delta Plugin merges **all record
+types that can be meaningfully merged** (leveled lists included — no need for
+tes3cmd/TES3Merge/Wrye Mash on top), reading the load order straight from
+`openmw.cfg`. It detects additions *and* removals in leveled lists, which the
+old tools don't.
+
+Becomes necessary at BCOM/Stage 6 scale, when multiple plugins touch the same
+leveled lists (e.g. Repopulated Morrowind + BCOM + OAAB integrations).
+
+### Usage (against the Flatpak config)
+
+```bash
+# 1. Create a dedicated output mod folder, registered LAST in data= order:
+mkdir -p ~/mods/morrowind/mods/999_merged
+
+# 2. If re-running: remove the old merged plugin's content= line from
+#    openmw.cfg first (never merge a merge into itself), then:
+delta_plugin -c ~/.var/app/org.openmw.OpenMW/config/openmw/openmw.cfg \
+    merge ~/mods/morrowind/mods/999_merged/merged.omwaddon
+
+# 3. Add to openmw.cfg (data= line for 999_merged if not present, and
+#    content=merged.omwaddon as the LAST content line). Re-run after ANY
+#    plugin add/remove/reorder.
+```
+
+Notes:
+- **Errors** during merge = something failed and the output is missing pieces.
+  **Warnings** = real mod conflicts that can't merge cleanly — fix with compat
+  patches rather than ignoring.
+- `RAYON_NUM_THREADS=1` makes the log output readable when debugging.
+- The repo ships a `BCoM_WaterWorks.ESP` patch fixing a known master-comparison
+  issue — relevant when the BCOM stage lands.
+
+---
+
 ## OpenMW Flatpak Commands
 
 ```bash
