@@ -4,7 +4,36 @@ Tools used in this build, with setup and usage notes.
 
 ---
 
-## mlox — Load Order Sorter
+## PLOX — Load Order Sorter (current recommendation, 2026-08)
+
+**Repo**: https://github.com/rfuzzo/plox · **Nexus**: https://www.nexusmods.com/morrowind/mods/54262
+**Version**: 0.5.0
+
+PLOX is a Rust rewrite of mlox by rfuzzo that natively understands OpenMW
+loadouts — including `.omwaddon`, `.omwscripts`, and `.omwgame` files that we
+currently have to strip out by hand before feeding mlox. mlox is documented to
+produce incorrect results on OpenMW load orders, so **PLOX supersedes mlox for
+this build**. GUI and CLI variants exist; it reads the same community rules.
+
+Caveat: if this build ever migrates to a Modding-OpenMW curated list, run **no
+sorter at all** — MOMW hand-sorts their lists and warns that sorting tools break
+them (https://modding-openmw.com/load-order/). Their MOMW Tools Pack
+(https://gitlab.com/modding-openmw/momw-tools-pack, v1.50) handles ordering
+instead, and also bundles S3LightFixes, Groundcoverify, Delta Plugin, and
+OpenMW-Validator.
+
+Flatpak note: the MOMW Tools Pack README states verbatim that "The Flatpak
+version of OpenMW is not supported!" — its Configurator pipeline is off the
+table for this build. The individual CLI tools (S3LightFixes, Groundcoverify,
+Delta Plugin, OpenMW-Validator) still run standalone against the Flatpak config
+dir, and OpenMW-Validator is worth running after any load-order change.
+
+---
+
+## mlox — Load Order Sorter (legacy — kept for reference)
+
+> **Note (2026-08)**: superseded by PLOX above for OpenMW use. These notes are
+> retained because the workflow below was used to validate the current baseline.
 
 **Repo**: https://github.com/ZilophosGH/mlox-rfuzzo-fork  
 **Location**: `~/mods/morrowind/mlox/`  

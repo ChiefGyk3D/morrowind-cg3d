@@ -12,7 +12,7 @@ heavily enhanced mods as desired.
 
 ## IMPORTANT NOTES
 
-- Modding-OpenMW's current curated lists require OpenMW 0.50+.
+- Modding-OpenMW's current curated lists require OpenMW 0.51+ (as of June 2026).
 - Their automated Linux workflows do NOT support Flatpak OpenMW.
 - Flatpak OpenMW is still fine for manual installs through openmw.cfg and separate data paths.
 - If you go very large, use the Modding-OpenMW CFG Generator snippets and NOT "enable every plugin".

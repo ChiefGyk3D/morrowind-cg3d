@@ -31,6 +31,8 @@ Reproducible setup for a modded **OpenMW 0.50** (Flatpak) Morrowind install on L
 | File | Purpose |
 |------|---------|
 | `OPENMW_BUILD_SHEET.md` | Master build sheet — system paths, Flatpak config, tier-by-tier mod list |
+| `version_audit_2026-08.md` | August 2026 version audit — what's outdated, upgrade order, TR 26.08 notes |
+| `enhancement_plan_2026-08.md` | Researched vanilla-plus enhancement plan — graphics, QoL, engine settings |
 | `openmw_install_order.md` | Layered install order with rationale from MOMW & TR curated lists |
 | `mod_audit_notes.md` | Per-mod audit — readme findings, FOMOD options used, action items |
 | `mod-list.txt` | All mods with Nexus URLs, download status, version notes |
@@ -65,11 +67,15 @@ Reproducible setup for a modded **OpenMW 0.50** (Flatpak) Morrowind install on L
 
 | Issue | Impact | Status |
 |-------|--------|--------|
-| Glow in the Dahrk v3.3.0 downloaded, but OpenMW needs **v2.11.2** | Windows don't glow at night; Nords Shut Your Windows meshes reference GitD nodes that won't function | ❌ Re-download from Nexus "Old files" |
+| **Tamriel Rebuilt 26.08 "Poison Song"** released 2026-08-23 (build has 25.08) | Joinable House Indoril, Kemel-Ze, remade Sundered Scar — plus TD 26.08 hard requirement and save incompatibility | ⬆️ Upgrade path in [`version_audit_2026-08.md`](version_audit_2026-08.md) |
+| **OpenMW 0.51.0** is current stable (build has 0.50.0) | MOMW curated lists now assume 0.51 | ⬆️ `flatpak update` |
+| Glow in the Dahrk v3.3.0 downloaded, but OpenMW needs **v2.11.2** (pin re-verified Aug 2026) | Windows don't glow at night; Nords Shut Your Windows meshes reference GitD nodes that won't function | ❌ Re-download from Nexus "Old files" |
+| MacKom head family broken with Tamriel_Data 26.08 (pulled from MOMW lists 2026-08-23) | Stage 5 plan changed — Facelift for Tamriel Data / Westly's Faces Refurbished instead | 🔄 Plan updated in `openmw_install_order.md` |
+| Repopulated Morrowind may lag behind TR 26.08 | `RepopulatedMainland.ESP` is the likely breakage when TR upgrades | ⏸️ Check Nexus before TR upgrade |
 | `RepopulatedMorrowind_OAAB_Data.ESP` not extracted | RM NPCs miss out on OAAB equipment variety | Optional enhancement |
-| Leveled-list merging not yet set up | Needed once BCOM / big-boy mods land | Future (tes3cmd / Wrye Mash) |
+| Leveled-list merging not yet set up | Needed once BCOM / big-boy mods land | Future (Delta Plugin via MOMW Tools Pack) |
 
-Full details and per-mod findings in [`mod_audit_notes.md`](mod_audit_notes.md).
+Full details in [`mod_audit_notes.md`](mod_audit_notes.md) and [`version_audit_2026-08.md`](version_audit_2026-08.md).
 
 ## Quick start (rebuilding from scratch)
 
@@ -83,9 +89,11 @@ Full details and per-mod findings in [`mod_audit_notes.md`](mod_audit_notes.md).
 
 ## Roadmap
 
-- **Big boy expansion** (Stages 4–8): Vurt's Visual Resurgence, MacKom heads, BCOM, city add-ons — documented in `openmw_install_order.md`
+- **August 2026 upgrades** ([`version_audit_2026-08.md`](version_audit_2026-08.md)): OpenMW 0.51 → Tamriel_Data 26.08 + TR 26.08 "Poison Song" → GitD 2.11.2
+- **Vanilla-plus enhancement phases** ([`enhancement_plan_2026-08.md`](enhancement_plan_2026-08.md)): post-processing, groundcover, skies/water, normal maps, interiors/faces, QoL Lua mods, tuned settings.cfg
+- **Big boy expansion** (Stages 4–8): Vurt's Visual Resurgence, BCOM 3.3.0+, city add-ons, heads (Facelift/Westly's now; MacKom deferred) — documented in `openmw_install_order.md`
 - **Save backups**: rsync to local + NAS with systemd timer
-- **Leveled list merging**: When the mod list grows (especially with BCOM), tes3cmd or Wrye Mash for OpenMW will be needed
+- **Leveled list merging**: When the mod list grows (especially with BCOM), Delta Plugin (MOMW Tools Pack) or tes3cmd will be needed
 
 ## Links
 

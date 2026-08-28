@@ -3,6 +3,24 @@ MORROWIND OPENMW MOD DOWNLOAD LIST
 All mods are from Nexus Mods (morrowind) unless noted.
 Format: [STATUS] NUMBER - Name | Nexus ID | URL
 
+*** 2026-08-28 VERSION AUDIT (see version_audit_2026-08.md for full detail) ***
+  UPDATE NEEDED:
+  - OpenMW Flatpak 0.50.0 -> 0.51.0 (current stable since June 2026)
+  - 005 Tamriel Data (HD) 25.05 -> 26.08  (REQUIRED by TR 26.08; same session)
+  - 006 Tamriel Rebuilt 25.08.12 -> 26.08 "Poison Song" (2026-08-23:
+    joinable House Indoril, Kemel-Ze, remade Sundered Scar; old TR saves
+    "highly incompatible" -- new character recommended)
+  - Harvest Lights -> 1.7, Distant Fixes Lua -> 1.4 (re-download from GitLab)
+  - BCOM (future): use 3.3.0+ (2026-04-19), not 3.2.9
+  HOLD / CHECK FIRST:
+  - 301 Repopulated Morrowind: check Nexus for a TR 26.08-compatible update
+    BEFORE upgrading TR; its RepopulatedMainland.ESP is the likely breakage
+  - 306 MacKom head family: pulled from MOMW lists 2026-08-23 (broken with
+    Tamriel_Data 26.08). Defer; see PRETTIER STAGE B below for alternatives.
+  UNCHANGED: PfP 5.0.6, UMOPP 3.2.1, MOP 1.18.0, OAAB 2.5.1, Project Atlas
+  0.7.5, MET 6.1, GH 1.04, Weapon Sheathing 1.6, Expansion Delay 1.3,
+  GitD pin at 2.11.2 for OpenMW (re-verified Aug 2026 vs TR + MOMW docs)
+
 NOTE: Nexus requires login to download. Log in at https://www.nexusmods.com
       then click "Manual Download" on each mod's Files tab.
       If you have Nexus Premium + API key, automated download is possible (see below).
@@ -209,23 +227,29 @@ Download it alongside Tamriel Data if you plan to use BCOM.
 "PRETTIER" MODS (STAGE B: HEADS/BODIES)
 ================================================================================
 
-[NEED] 306 - Bodies and Heads Replacers (FAMILY OF MODS)
-  This is actually multiple mods to investigate:
+[NEED] 306 - Bodies and Heads Replacers
+  *** PLAN CHANGED 2026-08: MacKom family ON HOLD. MOMW removed MacKom's
+      Humanoid Heads + all satellite mods from their lists on 2026-08-23:
+      "not yet updated for the current Tamriel Data (HD) release, causing
+      issues with newly added face models." Revisit once patched. ***
 
-  306a - MacKom's Humanoid Heads
-    URL: Search "MacKom Heads" on Nexus Morrowind.
+  Current vanilla-faithful picks instead:
 
-  306b - New Hairs for MacKom's Heads
-    URL: Search on Nexus.
+  306a - Facelift for Tamriel Data (TR NPC faces; pairs with Familiar Faces)
+    Nexus ID: 53935
+    URL: https://www.nexusmods.com/morrowind/mods/53935?tab=files
 
-  306c - Expressive Eyes for MacKom's Heads
-    URL: Search on Nexus.
+  306b - Facelift (base-game vanilla face enhancement, same author lane)
+    Nexus ID: 47617
+    URL: https://www.nexusmods.com/morrowind/mods/47617?tab=files
 
-  306d - Dandion's Familiar Looks / related patches
-    URL: Search on Nexus.
+  306c - Westly's Faces Refurbished (HD but "vanilla-like feeling";
+         MOMW's replacement for MacKom on Graphics Overhaul, 2026-08-23)
+    Nexus ID: 51214
+    URL: https://www.nexusmods.com/morrowind/mods/51214?tab=files
 
-  306e - TR Heads Replacers / MacKom style TR patches
-    URL: Search on Nexus.
+  306d - (DEFERRED) MacKom's Humanoid Heads + hairs/eyes/TR patches
+    Wait for Tamriel_Data 26.08 compatibility updates.
 
 ================================================================================
 LEGACY (DO NOT USE)

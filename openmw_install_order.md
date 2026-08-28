@@ -91,37 +91,50 @@ The curated OpenMW lists organize like this:
 ## Stage 4–8: Big Boy Expansion (future, after Tier 1–3 are stable)
 
 ### Stage 4: Big Texture/Visual Stack
-| # | Mod | Layer |
-|---|-----|-------|
-| 20 | Vurt's Morrowind Visual Resurgence | Textures |
-| 21 | Tamriel Data Texture Upscale | Textures |
-| 22 | OAAB Full Upscale | Textures |
-| 23 | Normal Maps for Morrowind | Normal Maps |
-| 24 | Normal Maps for Premium | Normal Maps |
-| 25 | Normal Maps for Everything | Normal Maps |
-| 26 | V.I.P. - Vegetto's Important Patches | Compat Patches |
+| # | Mod | Layer | Notes (2026-08 research) |
+|---|-----|-------|--------------------------|
+| 20 | Vurt's Morrowind Visual Resurgence (Nexus 56037) | Textures | On MOMW Graphics Overhaul, loaded AFTER MET so it wins overlaps. Get HD version + OAAB Retexture + VFX Patch; delete 3 bad textures per MOMW usage notes. "Overhaul-tier faithful" — half a step past strict vanilla-plus. |
+| 21 | Tamriel Data Texture Upscale | Textures | ⚠️ Pulled from MOMW lists 2026-08-23 pending TD 26.08 update — verify before installing. |
+| 22 | OAAB Full Upscale | Textures | |
+| 23 | Normal Maps for Morrowind (Nexus 45336) | Normal Maps | Classic vanilla-friendly base layer. |
+| 24 | Normal Maps for Everything (Nexus 52567) | Normal Maps | The key pack: ships per-mod modules for exactly our stack — MET, Project Atlas ("Atlas Textures AIO"), Tamriel_Data, OAAB, BCOM. Pick modules matching installed texture packs; old MET-conflict folklore is obsolete. Requires manual deletion of known-bad `_n.dds` files (list in MOMW usage notes). TR "Hall of Justice" module pulled 2026-08-23 pending TR 26.08 update. |
+| 25 | Normal Maps for Premium (Nexus 56419) | Normal Maps | Covers mods used on MOMW lists; load after 23/24. |
+| 26 | GitD Normal Specular PBR Maps (Nexus 58029) | Normal Maps | Pairs with our pending Glow in the Dahrk 2.11.2 install. |
+| 27 | V.I.P. - Vegetto's Important Patches | Compat Patches | |
 
 ### Stage 5: Heads / Faces / Character Appearance
-| # | Mod | Layer |
-|---|-----|-------|
-| 27 | MacKom's Humanoid Heads | NPCs |
-| 28 | New Hairs for MacKom's Heads | NPCs |
-| 29 | Expressive Eyes for MacKom's Heads | NPCs |
-| 30 | Dandion's Familiar Looks OpenMW Texture Path Fix | NPCs |
-| 31 | TR heads replacer (MacKom's heads) | NPCs |
-| 32 | Expressive Eyes TR Heads patch | NPCs |
-| 33 | TR Heads and Hair replacer - Mackom's Heads | NPCs |
-| 34 | Dandions Mackom Style Fixed Normals for OpenMW | NPCs |
-| 35 | Mackom's Style TR Patch | NPCs |
 
-**Rule**: Pick ONE head ecosystem. Do not mix MacKom with unrelated face replacers.
+> ⚠️ **PLAN CHANGED (2026-08-23)**: MOMW removed MacKom's Humanoid Heads and all
+> eight satellite mods from their lists — "not yet updated for the current
+> Tamriel Data (HD) release, causing issues with newly added face models."
+> The MacKom stack below is **deferred** until it's patched for TD 26.08.
+
+Current vanilla-faithful path (available now):
+
+| # | Mod | Layer | Notes |
+|---|-----|-------|-------|
+| 28 | Facelift for Tamriel Data (Nexus 53935) | NPCs | TR/TD NPC face enhancement; pairs with our Familiar Faces. On MOMW I Heart Vanilla: DC. |
+| 29 | Facelift (Nexus 47617) | NPCs | Base-game companion to 28, same vanilla-enhancement lane. |
+| 30 | Westly's Faces Refurbished (Nexus 51214) | NPCs | HD but "vanilla-like feeling" — MOMW's Graphics Overhaul replacement for MacKom (added 2026-08-23). Optional bigger step. |
+
+Deferred (revisit once updated for Tamriel_Data 26.08): MacKom's Humanoid Heads,
+New Hairs / Expressive Eyes for MacKom's, Dandion's Familiar Looks fixes, the TR
+MacKom head/hair replacers and patches.
+
+**Rule**: Pick ONE head ecosystem. Do not mix Facelift/Westly's with MacKom.
 
 ### Stage 6: City Overhaul Core
 | # | Mod | Layer |
 |---|-----|-------|
-| 36 | Beautiful Cities of Morrowind | Cities |
+| 36 | Beautiful Cities of Morrowind **3.3.0+** | Cities |
 
 Install BCOM **before** city add-ons and **before** Repopulated Morrowind if you want BCOM compatibility pieces. TR_BCOM_Patch.ESP and other addon patches exist.
+
+2026-08 notes: use v3.3.0 (2026-04-19) or later, download "BCOM Core" +
+"Patches" (patches go in a `Patches/` subfolder); the "Various BCoM and OpenMW
+patches" companion (Nexus 51194) and MOMW Patches hub
+(gitlab.com/modding-openmw/momw-patches) carry current fixes. Verify TR 26.08
+compatibility patches when this stage lands, and sort with PLOX afterwards.
 
 ### Stage 7: City Extras (on top of BCOM)
 | # | Mod | Layer |
