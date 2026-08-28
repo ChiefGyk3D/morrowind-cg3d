@@ -1,5 +1,9 @@
 # MORROWIND OPENMW LINUX FLATPAK BUILD SHEET
 
+> **STATUS: TESTING — YMMV.** This sheet reflects a build that is still being
+> validated tier by tier on one machine. Follow the validation checklists and
+> keep backups; do not treat any section as battle-tested yet.
+
 ## GOAL
 
 Build a stable but scalable OpenMW setup on Linux using Flatpak OpenMW, starting with a
@@ -13,47 +17,50 @@ heavily enhanced mods as desired.
 - Flatpak OpenMW is still fine for manual installs through openmw.cfg and separate data paths.
 - If you go very large, use the Modding-OpenMW CFG Generator snippets and NOT "enable every plugin".
 
-## RECOMMENDED FOLDER LAYOUT
+## FOLDER LAYOUT (as used by this build)
+
+This matches what `extract_mods.sh` actually produces under `~/mods/morrowind/`:
 
 ```
-~/Games/Morrowind/
-├── Downloads/
-├── Mods/
-│   ├── 001_Patch_for_Purists/
-│   ├── 002_Unofficial_Official_Plugins_Patched/
-│   ├── 003_Expansion_Delay/
-│   ├── 004_Morrowind_Optimization_Patch/
-│   ├── 005_Tamriel_Data_HD/
-│   ├── 006_Tamriel_Rebuilt/
-│   ├── 101_Graphic_Herbalism/
-│   ├── 102_Harvest_Lights_OpenMW/
-│   ├── 103_Weapon_Sheathing/
-│   ├── 104_Project_Atlas/
-│   ├── 105_Morrowind_Enhanced_Textures/
-│   ├── 106_Familiar_Faces/
-│   ├── 201_OpenMW_Containers_Animated/
-│   ├── 202_Glow_in_the_Dahrk_2_11_2/
-│   ├── 203_Nords_Shut_Your_Windows/
-│   ├── 204_TrueType_Fonts_for_OpenMW/
-│   ├── 205_Cantons_on_the_Global_Map/
-│   ├── 206_Distant_Seafloor_for_OpenMW/
-│   ├── 207_Dynamic_Distant_Buildings_for_OpenMW/
-│   ├── 301_Repopulated_Morrowind/
-│   ├── 302_Repopulated_Creatures/
-│   ├── 303_Beautiful_Cities_of_Morrowind/
-│   ├── 304_Normal_Maps_for_Everything/
-│   ├── 305_Normal_Maps_for_Morrowind_TR_OAAB/
-│   └── 306_Bodies_Heads_Replacers/
-└── Backups/
+~/mods/morrowind/
+├── mod_files/                       # downloaded archives (~5 GB, not in git)
+├── mods/
+│   ├── 001_patch_for_purists/
+│   ├── 002_umopp/
+│   ├── 003_expansion_delay/
+│   ├── 004_morrowind_optimization_patch/
+│   ├── 005_tamriel_data/
+│   ├── 006_tamriel_rebuilt/
+│   ├── OAAB_Data/
+│   ├── 101_graphic_herbalism/
+│   ├── 102_harvest_lights/
+│   ├── 103_weapon_sheathing/
+│   ├── 104_project_atlas/
+│   ├── 105_morrowind_enhanced_textures/
+│   ├── 106_familiar_faces/
+│   ├── 201_containers_animated/
+│   ├── 202_glow_in_the_dahrk/       # v2.11.2 ONLY — currently pending re-download
+│   ├── 203_nords_shut_your_windows/
+│   ├── 204_truetype_fonts/
+│   ├── 205_cantons_global_map/
+│   ├── 206_distant_seafloor/
+│   ├── 207_distant_fixes_lua/       # replaces Dynamic Distant Buildings (they conflict)
+│   ├── 301_repopulated_morrowind/
+│   └── 302_repopulated_creatures/
+├── mlox/                            # cloned separately
+└── saves_backup_*/                  # rsync'd save backups (not in git)
 ```
+
+Future big-boy folders (303 BCOM, 304/305 normal maps, 306 bodies/heads) follow the
+same numbering scheme when they land.
 
 ## PREP CHECKLIST
 
 - [ ] Confirm OpenMW is 0.50 or newer
-- [ ] Back up ~/.config/openmw/openmw.cfg
-- [ ] Keep all mod archives in ~/Games/Morrowind/Downloads/
-- [ ] Extract each mod into its own numbered folder under ~/Games/Morrowind/Mods/
-- [ ] Grant Flatpak OpenMW access to ~/Games/Morrowind
+- [ ] Back up ~/.var/app/org.openmw.OpenMW/config/openmw/openmw.cfg
+- [ ] Keep all mod archives in ~/mods/morrowind/mod_files/
+- [ ] Extract each mod into its own numbered folder under ~/mods/morrowind/mods/ (extract_mods.sh does this)
+- [ ] Grant Flatpak OpenMW read access to ~/mods/morrowind
 - [ ] Add one mod folder at a time to openmw.cfg as a separate data= line
 - [ ] If a mod includes a BSA, add fallback-archive= for it
 - [ ] Test after each tier instead of dumping everything in at once
@@ -63,20 +70,26 @@ heavily enhanced mods as desired.
 Use Flatseal or a flatpak override so OpenMW can read your game/mod folder.
 
 ```bash
-flatpak override --user --filesystem=$HOME/Games/Morrowind
+flatpak override --user org.openmw.OpenMW --filesystem=$HOME/mods/morrowind:ro
 ```
+
+**Always name the app** (`org.openmw.OpenMW`) — running `flatpak override --user
+--filesystem=...` without an app ID grants the folder to EVERY Flatpak app on the
+system. `:ro` keeps the grant read-only; OpenMW only needs to read mod data.
 
 ## OPENMW CONFIG
 
-Typical path:
+Flatpak OpenMW does NOT use `~/.config/openmw/`. The real config path is:
 ```
-~/.config/openmw/openmw.cfg
+~/.var/app/org.openmw.OpenMW/config/openmw/openmw.cfg
 ```
+(Non-Flatpak installs use `~/.config/openmw/openmw.cfg`.)
 
 Backup:
 ```bash
-mkdir -p ~/Games/Morrowind/Backups
-cp ~/.config/openmw/openmw.cfg ~/Games/Morrowind/Backups/openmw.cfg.bak
+mkdir -p ~/mods/morrowind/backups
+cp ~/.var/app/org.openmw.OpenMW/config/openmw/openmw.cfg \
+   ~/mods/morrowind/backups/openmw.cfg.$(date +%Y%m%d).bak
 ```
 
 ---
@@ -91,6 +104,7 @@ These are the must-install backbone mods.
 - [ ] 004 Morrowind Optimization Patch
 - [ ] 005 Tamriel_Data (HD)
 - [ ] 006 Tamriel Rebuilt
+- [ ] OAAB_Data (shared asset library — required by BCOM later, integrates with Repopulated Morrowind)
 
 ### Tier 1 validation
 
@@ -132,7 +146,7 @@ These are optional polish extras.
 - [ ] 204 TrueType Fonts for OpenMW
 - [ ] 205 Cantons on the Global Map
 - [ ] 206 Distant Seafloor for OpenMW
-- [ ] 207 Dynamic Distant Buildings for OpenMW
+- [ ] 207 Distant Fixes: Lua Edition (NOT Dynamic Distant Buildings — the two are incompatible; Distant Fixes replaces it)
 
 ### Tier 3 validation
 
@@ -273,35 +287,44 @@ If something breaks, disable in this order:
 
 ## OPENMW.CFG TEMPLATE SKELETON
 
-Replace `YOURUSER` with your Linux username.
+Replace `YOURUSER` with your Linux username. Paths match the folders
+`extract_mods.sh` creates. Later `data=` lines override earlier ones.
+
+Tamriel_Data ships BSAs, so also register:
+```ini
+fallback-archive=PT_Data.bsa
+fallback-archive=TR_Data.bsa
+```
 
 ```ini
-data="/home/YOURUSER/Games/Morrowind/Mods/001_Patch_for_Purists"
-data="/home/YOURUSER/Games/Morrowind/Mods/002_Unofficial_Official_Plugins_Patched"
-data="/home/YOURUSER/Games/Morrowind/Mods/003_Expansion_Delay"
-data="/home/YOURUSER/Games/Morrowind/Mods/004_Morrowind_Optimization_Patch"
-data="/home/YOURUSER/Games/Morrowind/Mods/005_Tamriel_Data_HD"
-data="/home/YOURUSER/Games/Morrowind/Mods/006_Tamriel_Rebuilt"
-data="/home/YOURUSER/Games/Morrowind/Mods/101_Graphic_Herbalism"
-data="/home/YOURUSER/Games/Morrowind/Mods/102_Harvest_Lights_OpenMW"
-data="/home/YOURUSER/Games/Morrowind/Mods/103_Weapon_Sheathing"
-data="/home/YOURUSER/Games/Morrowind/Mods/104_Project_Atlas"
-data="/home/YOURUSER/Games/Morrowind/Mods/105_Morrowind_Enhanced_Textures"
-data="/home/YOURUSER/Games/Morrowind/Mods/106_Familiar_Faces"
-data="/home/YOURUSER/Games/Morrowind/Mods/201_OpenMW_Containers_Animated"
-data="/home/YOURUSER/Games/Morrowind/Mods/202_Glow_in_the_Dahrk_2_11_2"
-data="/home/YOURUSER/Games/Morrowind/Mods/203_Nords_Shut_Your_Windows"
-data="/home/YOURUSER/Games/Morrowind/Mods/204_TrueType_Fonts_for_OpenMW"
-data="/home/YOURUSER/Games/Morrowind/Mods/205_Cantons_on_the_Global_Map"
-data="/home/YOURUSER/Games/Morrowind/Mods/206_Distant_Seafloor_for_OpenMW"
-data="/home/YOURUSER/Games/Morrowind/Mods/207_Dynamic_Distant_Buildings_for_OpenMW"
-data="/home/YOURUSER/Games/Morrowind/Mods/301_Repopulated_Morrowind"
-data="/home/YOURUSER/Games/Morrowind/Mods/302_Repopulated_Creatures"
-data="/home/YOURUSER/Games/Morrowind/Mods/303_Beautiful_Cities_of_Morrowind"
-data="/home/YOURUSER/Games/Morrowind/Mods/304_Normal_Maps_for_Everything"
-data="/home/YOURUSER/Games/Morrowind/Mods/305_Normal_Maps_for_Morrowind_TR_OAAB"
-data="/home/YOURUSER/Games/Morrowind/Mods/306_Bodies_Heads_Replacers"
+data="/home/YOURUSER/mods/morrowind/mods/001_patch_for_purists"
+data="/home/YOURUSER/mods/morrowind/mods/002_umopp"
+data="/home/YOURUSER/mods/morrowind/mods/003_expansion_delay"
+data="/home/YOURUSER/mods/morrowind/mods/005_tamriel_data"
+data="/home/YOURUSER/mods/morrowind/mods/OAAB_Data"
+data="/home/YOURUSER/mods/morrowind/mods/004_morrowind_optimization_patch"
+data="/home/YOURUSER/mods/morrowind/mods/006_tamriel_rebuilt"
+data="/home/YOURUSER/mods/morrowind/mods/101_graphic_herbalism"
+data="/home/YOURUSER/mods/morrowind/mods/104_project_atlas"
+data="/home/YOURUSER/mods/morrowind/mods/105_morrowind_enhanced_textures"
+data="/home/YOURUSER/mods/morrowind/mods/102_harvest_lights"
+data="/home/YOURUSER/mods/morrowind/mods/202_glow_in_the_dahrk"
+data="/home/YOURUSER/mods/morrowind/mods/203_nords_shut_your_windows"
+data="/home/YOURUSER/mods/morrowind/mods/103_weapon_sheathing"
+data="/home/YOURUSER/mods/morrowind/mods/201_containers_animated"
+data="/home/YOURUSER/mods/morrowind/mods/206_distant_seafloor"
+data="/home/YOURUSER/mods/morrowind/mods/207_distant_fixes_lua"
+data="/home/YOURUSER/mods/morrowind/mods/106_familiar_faces"
+data="/home/YOURUSER/mods/morrowind/mods/204_truetype_fonts"
+data="/home/YOURUSER/mods/morrowind/mods/205_cantons_global_map"
+data="/home/YOURUSER/mods/morrowind/mods/301_repopulated_morrowind"
+data="/home/YOURUSER/mods/morrowind/mods/302_repopulated_creatures"
 ```
+
+The order above follows the layering in `openmw_install_order.md`
+(resources → meshes/performance → landmass → textures → lighting → animation →
+distant → NPCs → UI → population). Future big-boy folders (303 BCOM,
+304/305 normal maps, 306 bodies/heads) slot in per that document.
 
 ---
 

@@ -1,5 +1,8 @@
 # Mod Audit: Per-Mod Notes & Findings
 
+> **STATUS: TESTING — YMMV.** "Installed correctly" below means the files are in
+> place per each mod's docs, not that everything has been fully play-tested yet.
+
 Audit date: 2026-03-31  
 All readmes, FOMOD configs, and Nexus/TR/MOMW documentation reviewed.
 

@@ -1,5 +1,8 @@
 # OpenMW Mod Install Order & Layering Guide
 
+> **STATUS: TESTING — YMMV.** Order below is sourced from MOMW/TR guidance but is
+> still being validated tier by tier on one machine.
+
 **System**: OpenMW 0.50.0 Flatpak · RTX 5070 Ti · Ryzen 9 5950X · 64 GB RAM · Pop!_OS  
 **Principle**: Later `data=` entries override earlier ones — foundation first, then textures/meshes, then city/world overhauls, then NPC/population, then compatibility patches.  
 **Sources**: [Modding-OpenMW "I Heart Vanilla: DC"](https://modding-openmw.com/lists/i-heart-vanilla-directors-cut/), [TR Recommended Mods](https://www.tamriel-rebuilt.org/recommended-mods), [Modding-OpenMW CFG Generator](https://modding-openmw.com/cfg/total-overhaul/)
