@@ -179,6 +179,9 @@ flatpak override --user org.openmw.OpenMW --filesystem=/path/to/mods:ro
 ## Useful Diagnostic Commands
 
 ```bash
+# Pre-launch config validation (data=/content=/fallback-archive= vs disk):
+~/mods/morrowind/check_setup.sh
+
 # Check openmw.log for errors after launch
 grep -E '(Error|Warning|Failed|missing)' ~/.var/app/org.openmw.OpenMW/config/openmw/openmw.log
 

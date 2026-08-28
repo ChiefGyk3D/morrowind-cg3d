@@ -88,7 +88,7 @@ The sorter landscape shifted since March:
 1. OpenMW Flatpak 0.50.0 → **0.51.0**
 2. Tamriel_Data 25.05 → **26.08** (same session as #3)
 3. Tamriel Rebuilt 25.08.12 → **26.08** (check Repopulated Morrowind compat first)
-4. Harvest Lights → **1.7**, Distant Fixes Lua → **1.4**
+4. Harvest Lights → **1.7**, Distant Fixes Lua → **1.4** — automated: run `./update_gitlab_mods.sh`
 5. Glow in the Dahrk **2.11.2** (still outstanding from the March audit)
 6. Adopt **PLOX** for load-order checks (keep mlox notes for reference)
 7. Future BCOM stage: use **3.3.0+**, not 3.2.9
