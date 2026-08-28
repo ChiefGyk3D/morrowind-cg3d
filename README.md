@@ -38,6 +38,8 @@ Reproducible setup for a modded **OpenMW 0.50** (Flatpak) Morrowind install on L
 | `mod-list.txt` | All mods with Nexus URLs, download status, version notes |
 | `tools_reference.md` | mlox, Flatpak, 7z, and diagnostic command reference |
 | `extract_mods.sh` | Extraction script used to unpack all archives into numbered mod folders |
+| `backup/` | Save-backup automation — rsync snapshot script + systemd user timer (see `backup/README.md`) |
+| `config/` | Ready-to-copy config snippets — tuned `settings.cfg` block, Skies .IV fallbacks |
 | `.gitignore` | Keeps multi-GB mod archives and extracted data out of version control |
 
 ## What this repo does NOT track
@@ -92,8 +94,8 @@ Full details in [`mod_audit_notes.md`](mod_audit_notes.md) and [`version_audit_2
 - **August 2026 upgrades** ([`version_audit_2026-08.md`](version_audit_2026-08.md)): OpenMW 0.51 → Tamriel_Data 26.08 + TR 26.08 "Poison Song" → GitD 2.11.2
 - **Vanilla-plus enhancement phases** ([`enhancement_plan_2026-08.md`](enhancement_plan_2026-08.md)): post-processing, groundcover, skies/water, normal maps, interiors/faces, QoL Lua mods, tuned settings.cfg
 - **Big boy expansion** (Stages 4–8): Vurt's Visual Resurgence, BCOM 3.3.0+, city add-ons, heads (Facelift/Westly's now; MacKom deferred) — documented in `openmw_install_order.md`
-- **Save backups**: rsync to local + NAS with systemd timer
-- **Leveled list merging**: When the mod list grows (especially with BCOM), Delta Plugin (MOMW Tools Pack) or tes3cmd will be needed
+- ✅ **Save backups**: built — snapshot script + systemd timer in [`backup/`](backup/README.md); install per its README
+- ✅ **Leveled list merging**: tooling chosen and documented — Delta Plugin workflow in `tools_reference.md`, needed once BCOM lands
 
 ## Links
 
