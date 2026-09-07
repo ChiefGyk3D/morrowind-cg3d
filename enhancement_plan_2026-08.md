@@ -1,6 +1,7 @@
 # Vanilla-Plus Enhancement Plan — August 2026
 
-> **STATUS: TESTING — YMMV.** Research-backed plan for taking the baseline to
+> **STATUS: TESTING — YMMV.** For the step-by-step install of this plan see
+> [`GAME_NIGHT_RUNBOOK.md`](GAME_NIGHT_RUNBOOK.md). Research-backed plan for taking the baseline to
 > "best Morrowind experience" territory **without straying from the vanilla
 > game** — enhance and add, never replace the art direction or game identity.
 > Sourced primarily from Modding-OpenMW's own list data on GitLab (read directly
@@ -48,7 +49,7 @@ Enable OpenMW's native groundcover (`[Groundcover] enabled = true`,
 | B2 | **Remiros' Groundcover** (Ashlands module, `Rem_AL.esp`; Solstheim module for vanilla Solstheim) | 46733 | What Lush doesn't cover |
 | B3 | **Remiros Groundcover Textures Improvement** | 54261 | Fixes jagged grass textures |
 | B4 | **OAAB Saplings** + OpenMW groundcover patch | 50334 + 52351 | We have OAAB_Data |
-| B5 | **Grass for Tamriel Rebuilt** | 54362 | ⚠️ **ON HOLD** — MOMW pulled TR grass plugins 2026-08-23 as incompatible with TR 26.08. Add when updated. |
+| B5 | **TR mainland grass** — Lush Synthesis's own TR module | (in 52931) | ✅ **Unblocked 2026-09-04** — MOMW re-listed "Lush Synthesis TR Update". `extract_mods.sh` copies the TR module automatically. |
 
 Purist alternative worth knowing: **Turn Normal Grass and Kelp into
 Groundcover** (52010) converts vanilla's own grass statics; **Groundcoverify**
@@ -214,7 +215,7 @@ the rest scale documented knobs up for this GPU.
 
 ```ini
 [Camera]
-viewing distance = 49152             # 6 cells; raise to taste, GPU has headroom
+viewing distance = 81920             # 10 cells — the 5070 Ti has the headroom and TR's mainland vistas earn it; drop to 65536 if pop-in bothers you
 
 [Cells]
 preload enabled = true
@@ -256,7 +257,7 @@ soft particles = true
 [Groundcover]
 enabled = true                       # for Phase B grass
 density = 1.0
-rendering distance = 12288           # default 6144
+rendering distance = 24576           # default 6144; 4x for this GPU — grass out to the horizon
 stomp mode = 2
 stomp intensity = 2                  # [MOMW]
 
@@ -298,6 +299,9 @@ chain = ssao_hq,underwater_interior_effects,underwater_effects,clouds,godrays,bl
 
 [Video]
 antialiasing = 4                     # MSAA; pairs with antialias alpha test
+framerate limit = 144                # SET TO YOUR MONITOR'S REFRESH RATE. OpenMW runs uncapped
+                                     # by default: four-digit FPS in menus = coil whine + heat for nothing
+vsync mode = 0                       # 0 off / 1 on / 2 adaptive — leave off with a framerate limit
 ```
 
 Notes:
