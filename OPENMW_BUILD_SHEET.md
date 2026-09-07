@@ -51,8 +51,11 @@ This matches what `extract_mods.sh` actually produces under `~/mods/morrowind/`:
 └── saves_backup_*/                  # rsync'd save backups (not in git)
 ```
 
-Future big-boy folders (303 BCOM, 304/305 normal maps, 306 bodies/heads) follow the
-same numbering scheme when they land.
+2026-09 enhancement-plan folders use `4xx_` (graphics: post-processing, grass,
+skies, normal maps, interiors, faces) and `5xx_` (gameplay/QoL Lua mods) —
+full list in `mod-list.txt`; data=/content=/groundcover= lines to add are in
+`GAME_NIGHT_RUNBOOK.md` §A5. Future big-boy folders (303 BCOM, Vurt's, heads)
+follow the same scheme when they land.
 
 ## PREP CHECKLIST
 

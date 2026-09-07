@@ -1,23 +1,49 @@
 #!/bin/bash
 set -euo pipefail
 
-# Updates the GitLab-hosted OpenMW Lua mods to their latest tagged release:
-#   - Harvest Lights            -> mods/102_harvest_lights
-#   - Distant Fixes: Lua Edition-> mods/207_distant_fixes_lua
+# Installs / updates the GitLab-hosted OpenMW Lua mods to their latest tagged
+# release, straight from the GitLab API. None of these need a Nexus login, so
+# they are fully automatable.
 #
-# These are the only mods in the build that don't need a Nexus login, so their
-# updates are fully automatable. The file set copied per mod mirrors each
-# project's own pkg.sh (what the official gitlab.io zip contains), plus a
-# version.txt recording the tag.
+# Per mod, everything at the repo root is copied EXCEPT build/site scaffolding
+# (web/, Makefile, pkg.sh, .git*, ...). Verified against each project's own
+# pkg.sh: this yields exactly the file set their official gitlab.io zip ships.
+# A version.txt records the tag; re-runs are no-ops when already current.
 #
-# Usage: ./update_gitlab_mods.sh            # update both
-#        ./update_gitlab_mods.sh harvest    # just Harvest Lights
-#        ./update_gitlab_mods.sh distant    # just Distant Fixes
+# Usage: ./update_gitlab_mods.sh            # core (baseline: Harvest Lights, Distant Fixes)
+#        ./update_gitlab_mods.sh qol        # enhancement-plan QoL Lua mods (5xx folders)
+#        ./update_gitlab_mods.sh all        # both
+#        ./update_gitlab_mods.sh <name>     # one mod, e.g. ui-modes
+#
+# After installing, add the content= lines listed at the end to openmw.cfg.
 
 MODS="${MODS_DIR:-$HOME/mods/morrowind/mods}"
 GITLAB_API="https://gitlab.com/api/v4"
+GROUP="modding-openmw"
 
 command -v curl >/dev/null 2>&1 || { echo "ERROR: curl not found." >&2; exit 1; }
+
+# name | target folder | content= line(s) to add | group
+# (content lines are informational — printed at the end)
+CORE_MODS=(
+    "harvest-lights|102_harvest_lights|harvest-lights.omwscripts"
+    "distant-fixes-lua-edition|207_distant_fixes_lua|distant-fixes-lua-edition.omwscripts"
+)
+QOL_MODS=(
+    "ui-modes|505_ui_modes|UiModes.omwscripts"
+    "pause-control|506_pause_control|pause-control.omwscripts"
+    "friendly-autosave|507_friendly_autosave|friendly-autosave.omwscripts"
+    "quickselect|508_quickselect|QuickSelect.omwscripts"
+    "go-home|509_go_home|go-home.omwscripts  (or go-home-locking-doors.omwscripts — pick ONE)"
+    "light-hotkey|510_light_hotkey|LightHotkey.omwscripts"
+    "convenient-thief-tools|511_convenient_thief_tools|convenient-thief-tools.omwscripts"
+    "smart-ammo|512_smart_ammo|smart-ammo.omwscripts"
+    "shield-unequipper|513_shield_unequipper|shield-unequipper.omwscripts"
+)
+
+# Repo-root entries that are build/site scaffolding, never mod content
+DENY=(web .git .gitignore .gitlab-ci.yml .gitmodules .gitattributes .gitlab .vscode
+      .DS_Store Makefile pkg.sh build.sh update-all-submodules.sh)
 
 # Extractor fallback chain: 7z (build standard) -> unzip -> python3 zipfile
 extract_zip() {
@@ -40,12 +66,16 @@ latest_tag() {
         | python3 -c "import json,sys; tags=json.load(sys.stdin); print(tags[0]['name'] if tags else '')"
 }
 
-# update_mod NAME GROUP/PROJECT TARGET_DIR PKG_PATH...
-# PKG_PATHs are the files/dirs the project's own pkg.sh ships.
+denied() {
+    local name="$1" d
+    for d in "${DENY[@]}"; do [[ "$name" == "$d" ]] && return 0; done
+    return 1
+}
+
+# update_mod NAME TARGET_DIR
 update_mod() {
-    local name="$1" project="$2" target="$3"
-    shift 3
-    local project_enc="${project//\//%2F}"
+    local name="$1" target="$2"
+    local project="$GROUP/$name" project_enc="$GROUP%2F$name"
 
     echo "== $name =="
     local tag
@@ -66,12 +96,9 @@ update_mod() {
     zip="$tmpdir/src.zip"
     echo "  Downloading gitlab.com/$project @ $tag ..."
     curl -sfL --max-time 300 -o "$zip" \
-        "https://gitlab.com/$project/-/archive/$tag/archive.zip?sha=$tag" || \
-    curl -sfL --max-time 300 -o "$zip" \
         "$GITLAB_API/projects/$project_enc/repository/archive.zip?sha=$tag"
 
     extract_zip "$zip" "$tmpdir/x"
-    # GitLab archives contain a single top-level dir named <project>-<tag>-<sha> or similar
     repo_base=$(find "$tmpdir/x" -mindepth 1 -maxdepth 1 -type d | head -1)
     if [[ -z "$repo_base" ]]; then
         echo "  ERROR: unexpected archive layout." >&2
@@ -80,48 +107,62 @@ update_mod() {
     fi
 
     mkdir -p "$target"
-    # Replace previous contents so removed files don't linger
-    rm -rf "${target:?}"/*
-    local missing=0
-    for p in "$@"; do
-        if [[ -e "$repo_base/$p" ]]; then
-            cp -a "$repo_base/$p" "$target/"
-        else
-            echo "  WARNING: '$p' missing from archive (packaging may have changed — check the repo)."
-            missing=1
-        fi
+    rm -rf "${target:?}"/*          # replace, so removed files don't linger
+    local entry copied=0
+    for entry in "$repo_base"/* "$repo_base"/.[!.]*; do
+        [[ -e "$entry" ]] || continue
+        denied "$(basename "$entry")" && continue
+        cp -a "$entry" "$target/"
+        copied=$((copied + 1))
     done
     echo "Mod version: $tag" > "$target/version.txt"
     rm -rf "$tmpdir"
 
-    if (( missing )); then
-        echo "  Updated to $tag with warnings."
-    else
-        echo "  Updated to $tag."
+    if ! find "$target" -maxdepth 1 -iname '*.omwscripts' -print -quit | grep -q .; then
+        echo "  WARNING: no .omwscripts at mod root — layout may have changed, check README."
     fi
+    echo "  Updated to $tag ($copied entries)."
 }
 
-FILTER="${1:-all}"
+SELECT="${1:-core}"
 FAILED=0
+INSTALLED=()
 
-if [[ "$FILTER" == "all" || "$FILTER" == "harvest" ]]; then
-    update_mod "Harvest Lights" "modding-openmw/harvest-lights" \
-        "$MODS/102_harvest_lights" \
-        CHANGELOG.md LICENSE README.md example-addon l10n scripts harvest-lights.omwscripts \
-        || FAILED=1
-fi
+run_set() {
+    local spec name target content
+    for spec in "$@"; do
+        IFS='|' read -r name target content <<< "$spec"
+        if update_mod "$name" "$MODS/$target"; then
+            INSTALLED+=("$target  ->  content=$content")
+        else
+            FAILED=1
+        fi
+    done
+}
 
-if [[ "$FILTER" == "all" || "$FILTER" == "distant" ]]; then
-    update_mod "Distant Fixes: Lua Edition" "modding-openmw/distant-fixes-lua-edition" \
-        "$MODS/207_distant_fixes_lua" \
-        data scripts CHANGELOG.md l10n LICENSE README.md TESTING.md distant-fixes-lua-edition.omwscripts \
-        || FAILED=1
-fi
+case "$SELECT" in
+    core) run_set "${CORE_MODS[@]}" ;;
+    qol)  run_set "${QOL_MODS[@]}" ;;
+    all)  run_set "${CORE_MODS[@]}" "${QOL_MODS[@]}" ;;
+    *)
+        match=""
+        for spec in "${CORE_MODS[@]}" "${QOL_MODS[@]}"; do
+            [[ "$spec" == "$SELECT|"* ]] && match="$spec"
+        done
+        if [[ -z "$match" ]]; then
+            echo "Unknown mod '$SELECT'. Known: $(printf '%s\n' "${CORE_MODS[@]}" "${QOL_MODS[@]}" | cut -d'|' -f1 | tr '\n' ' ')" >&2
+            exit 1
+        fi
+        run_set "$match" ;;
+esac
 
 echo ""
+if ((${#INSTALLED[@]})); then
+    echo "Installed/verified. Make sure openmw.cfg has a data= line for each folder"
+    echo "AND the matching content= line (Lua mods are inert without it):"
+    printf '  %s\n' "${INSTALLED[@]}"
+fi
 if (( FAILED )); then
-    echo "Done with errors — see above."
+    echo ""; echo "Done with errors — see above."
     exit 1
 fi
-echo "Done. Remember: content= lines for harvest-lights.omwscripts and"
-echo "distant-fixes-lua-edition.omwscripts must stay present in openmw.cfg."

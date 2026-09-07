@@ -129,6 +129,47 @@ for scripts_name in harvest-lights.omwscripts distant-fixes-lua-edition.omwscrip
     fi
 done
 
+echo ""
+echo "--- OpenMW Flatpak + NVIDIA driver ---"
+if command -v flatpak >/dev/null 2>&1; then
+    omw_ver=$(flatpak info org.openmw.OpenMW 2>/dev/null | awk -F': *' '/^ *Version:/{print $2; exit}')
+    if [[ -z "$omw_ver" ]]; then
+        warn "org.openmw.OpenMW Flatpak not found for this user (native install? then ignore)"
+    else
+        echo "  OpenMW Flatpak version: $omw_ver"
+        if [[ "$(printf '%s\n0.51\n' "$omw_ver" | sort -V | head -1)" != "0.51" ]]; then
+            warn "OpenMW $omw_ver is older than 0.51 — run: flatpak update org.openmw.OpenMW"
+        fi
+    fi
+    if command -v nvidia-smi >/dev/null 2>&1; then
+        drv=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -1 | tr -d ' ')
+        if [[ -n "$drv" ]]; then
+            ext="org.freedesktop.Platform.GL.nvidia-${drv//./-}"
+            echo "  Host NVIDIA driver: $drv  (Flatpak needs extension $ext)"
+            if flatpak list --runtime --columns=application 2>/dev/null | grep -qx "$ext"; then
+                echo "  Matching Flatpak NVIDIA GL extension is installed."
+            else
+                err "Flatpak NVIDIA GL extension '$ext' NOT installed — the classic 'worked last week, black screen tonight' failure after a host driver update. Fix: flatpak update   (or: flatpak install flathub $ext)"
+            fi
+            if (( ${drv%%.*} < 570 )); then
+                warn "Driver $drv is older than 570 — RTX 50-series (Blackwell) needs 570+."
+            fi
+        fi
+    else
+        echo "  nvidia-smi not found — skipping driver/extension match check."
+    fi
+else
+    echo "  flatpak not found — skipping (native OpenMW install?)."
+fi
+
+SETTINGS="$(dirname "$CFG")/settings.cfg"
+if [[ -f "$SETTINGS" ]]; then
+    if ! grep -qE '^\s*framerate limit\s*=' "$SETTINGS"; then
+        warn "settings.cfg has no 'framerate limit' — OpenMW runs uncapped (coil whine / heat in menus). See config/settings-tuning.cfg [Video]."
+    fi
+fi
+echo ""
+
 echo "=============================="
 echo "RESULT: $ERRORS error(s), $WARNINGS warning(s)"
 if (( ERRORS )); then

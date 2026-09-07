@@ -105,3 +105,20 @@ The sorter landscape shifted since March:
 - PLOX: <https://github.com/rfuzzo/plox> · MOMW load-order guidance: <https://modding-openmw.com/load-order/>
 - Nexus pages (spot-checked via search): PfP 45096, UMOPP 43931, MOP 45384,
   OAAB 49042, MET 46221, GH 46599, BCOM 49231, RM 51174
+
+---
+
+## Re-check — September 7, 2026
+
+Verified directly against Flathub's manifest and MOMW's list data on GitLab:
+
+| Item | Status |
+|------|--------|
+| OpenMW Flathub | **0.51.0** — `flatpak update` delivers it |
+| TR mainland grass (Lush Synthesis TR module) | **Unblocked** — MOMW re-added 2026-09-04; `extract_mods.sh` copies it |
+| Tamriel Data Texture Upscale | Back on MOMW lists since 2026-08-25 (Stage 4 optional) |
+| MacKom heads | **Still off** all MOMW lists; Westly's Faces Refurbished remains the replacement |
+| Repopulated Morrowind vs TR 26.08 | **Still unverified** — MOMW's only "Repopulated" change was a Creatures folder-path tweak. Plan: upgrade TR, leave `RepopulatedMainland.ESP` out of `content=` until RM updates |
+| TR 26.08 hotfix | None yet |
+
+Execution of this audit is now sequenced in `GAME_NIGHT_RUNBOOK.md`.
