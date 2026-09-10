@@ -115,7 +115,7 @@ don't feel like tonight, the extractor treats them as optional):
 | 13 | **Facelift for Tamriel Data** | **Both** main files: `Facelift_TR_Meshes` and `Facelift_TR_Textures`. | https://www.nexusmods.com/morrowind/mods/53935?tab=files |
 | 14 | **Morrowind Interiors Project** | Main file **and** the optional `Bloodmoon` file. | https://www.nexusmods.com/morrowind/mods/52237?tab=files |
 | 15 | **Better Waterfalls** | Main file. Extractor takes `00 Core` + `02 Tamriel Rebuilt Water`, skips 01. | https://www.nexusmods.com/morrowind/mods/45424?tab=files |
-| 15a | **Waterfalls Tweaks** (optional, not in any MOMW list) | Main file. Ships 3 ESPs — enable exactly ONE (`Waterfalls Tweaks.esp`). | https://www.nexusmods.com/morrowind/mods/46271?tab=files |
+| 15a | ~~Waterfalls Tweaks~~ | **Do not use.** Measured 2026-09-09: its ESP deletes the vanilla light `bc mushroom 64`, which TR_Mainland.esm references 892 times → "Cell reference not found" errors in every TR cell that uses it. Not in any MOMW list. | — |
 | 16 | **OpenMW More Dynamic Water Meshes** | Main file (single). | https://www.nexusmods.com/morrowind/mods/55392?tab=files |
 | 17 | **Improved Lights for All Shaders** | Main file. Extractor takes `00 Core` + `01 Smoke and Steam Emitters`. Needs `clamp lighting = false` (A6). | https://www.nexusmods.com/morrowind/mods/51463?tab=files |
 | 18 | **Kirel's Interior Weather** | ONLY the file named **"(Cleaned and updated with tes3cmd)"**. | https://www.nexusmods.com/morrowind/mods/49278?tab=files |
@@ -186,7 +186,6 @@ data="/home/YOURUSER/mods/morrowind/mods/409_gitd_normal_pbr"
 data="/home/YOURUSER/mods/morrowind/mods/405_skies_iv"
 data="/home/YOURUSER/mods/morrowind/mods/406_new_starfields"
 data="/home/YOURUSER/mods/morrowind/mods/412_better_waterfalls"
-data="/home/YOURUSER/mods/morrowind/mods/413_waterfalls_tweaks"
 data="/home/YOURUSER/mods/morrowind/mods/414_more_dynamic_water_meshes"
 data="/home/YOURUSER/mods/morrowind/mods/415_improved_lights_all_shaders"
 data="/home/YOURUSER/mods/morrowind/mods/416_kirels_interior_weather"
@@ -239,7 +238,6 @@ Then add the new plugins. Nexus mods that ship a plugin (exact names per MOMW):
 content=MorrowindInteriorsProject.ESP
 content=MorrowindInteriorsProject_Bloodmoon.ESP
 content=MorrowindInteriorsProject_TR.ESP          # after TR_Mainland.esm
-content=Waterfalls Tweaks.esp                     # only if #15a; exactly ONE of its three
 content=k_weather.esp                             # Kirel's
 content=OAAB_Saplings OpenMW Patch.ESP            # content=; the .esm goes in groundcover=
 content=book-jackets.esp

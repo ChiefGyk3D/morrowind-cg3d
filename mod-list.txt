@@ -356,9 +356,8 @@ GAME_NIGHT_RUNBOOK.md; extract_mods.sh auto-detects these by filename)
 [NEED] 412 - Better Waterfalls                  -> mods/412_better_waterfalls
   Nexus ID: 45424 | URL: https://www.nexusmods.com/morrowind/mods/45424?tab=files
   Files: main file. Extractor takes "00 Core" + "02 Tamriel Rebuilt Water"; skips 01.
-[NEED] 413 - Waterfalls Tweaks (optional)       -> mods/413_waterfalls_tweaks
-  Nexus ID: 46271 | URL: https://www.nexusmods.com/morrowind/mods/46271?tab=files
-  Files: main file. Notes: enable exactly ONE of its 3 ESPs (default "Waterfalls Tweaks.esp"). Not in any MOMW list.
+[SKIP] 413 - Waterfalls Tweaks (46271) — REMOVED 2026-09-09: its ESP deletes vanilla light "bc mushroom 64",
+  referenced 892x by TR_Mainland.esm ("Cell reference not found" in TR cells). Not in any MOMW list.
 [NEED] 414 - OpenMW More Dynamic Water Meshes   -> mods/414_more_dynamic_water_meshes
   Nexus ID: 55392 | URL: https://www.nexusmods.com/morrowind/mods/55392?tab=files
   Files: main file (single).

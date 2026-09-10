@@ -48,7 +48,6 @@
     {"id": 53935, "name": "Facelift for Tamriel Data", "folder": "410_facelift_tamriel_data", "optional": true, "files": [{"match": "Facelift_TR_Meshes*"}, {"match": "Facelift_TR_Textures*"}]},
     {"id": 52237, "name": "Morrowind Interiors Project", "folder": "411_morrowind_interiors_project", "optional": true, "files": [{"match": "Morrowind Interiors Project-*"}, {"match": "Morrowind Interiors Project - Bloodmoon*"}]},
     {"id": 45424, "name": "Better Waterfalls", "folder": "412_better_waterfalls", "optional": true, "files": [{"match": "Better Waterfalls*"}]},
-    {"id": 46271, "name": "Waterfalls Tweaks", "folder": "413_waterfalls_tweaks", "optional": true, "files": [{"match": "Waterfalls Tweaks-*", "category": "main"}]},
     {"id": 55392, "name": "OpenMW More Dynamic Water Meshes", "folder": "414_more_dynamic_water_meshes", "optional": true, "files": [{"match": "*Dynamic Water Meshes*"}]},
     {"id": 51463, "name": "Improved Lights for All Shaders", "folder": "415_improved_lights_all_shaders", "optional": true, "files": [{"match": "ILFAS*"}]},
     {"id": 49278, "name": "Kirel's Interior Weather (cleaned)", "folder": "416_kirels_interior_weather", "optional": true, "files": [{"match": "*Cleaned and updated*"}]},

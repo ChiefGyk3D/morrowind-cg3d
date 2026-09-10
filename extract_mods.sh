@@ -698,10 +698,7 @@ echo "[ADD] 412 Better Waterfalls..."
 # FOMOD: 00 Core + "02 Tamriel Rebuilt Water" (MOMW); 01 stays out.
 extract_all "*[- ]45424[- ]*" "412 Better Waterfalls" "$MODS/412_better_waterfalls" "*Tamriel Rebuilt*" || true
 
-echo "[ADD] 413 Waterfalls Tweaks..."
-# Ships three ESPs; enable exactly ONE (default: "Waterfalls Tweaks.esp"), after Better Waterfalls + PfP.
-extract_all "*[- ]46271[- ]*" "413 Waterfalls Tweaks" "$MODS/413_waterfalls_tweaks" || true
-
+echo "[ADD] 413 Waterfalls Tweaks — REMOVED 2026-09-09 (deletes vanilla light 'bc mushroom 64' that TR uses 892x)."
 echo "[ADD] 414 OpenMW More Dynamic Water Meshes..."
 if have_archive "*[- ]55392[- ]*" "414 More Dynamic Water Meshes" optional; then
     extract_auto "$ARCHIVE" "$MODS/414_more_dynamic_water_meshes"

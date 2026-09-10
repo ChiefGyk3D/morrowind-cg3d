@@ -31,7 +31,6 @@ DATA_ADDITIONS = [
     ("405_skies_iv", None),
     ("406_new_starfields", None),
     ("412_better_waterfalls", None),
-    ("413_waterfalls_tweaks", None),
     ("414_more_dynamic_water_meshes", None),
     ("415_improved_lights_all_shaders", None),
     ("416_kirels_interior_weather", None),
@@ -75,6 +74,9 @@ CONTENT_REMOVE = [
     # UMOPP 3.3.0: merged plugin replaces the individual ones ("do not use both")
     "adamantiumarmor.esp", "AreaEffectArrows.esp", "bcsounds.esp", "entertainers.esp",
     "EBQ_Artifact.esp", "LeFemmArmor.esp", "master_index.esp",
+    # Waterfalls Tweaks (2019, vanilla cells) DELETES the vanilla light "bc mushroom 64",
+    # which TR_Mainland.esm references 892 times -> "Cell reference not found" spam. Out.
+    "Waterfalls Tweaks.esp",
 ]
 # (plugin, insert_after existing content= entry or None = before the .omwscripts block)
 CONTENT_ESP = [
@@ -87,7 +89,6 @@ CONTENT_ESP = [
     ("MorrowindInteriorsProject.ESP", None),
     ("MorrowindInteriorsProject_Bloodmoon.ESP", None),
     ("MorrowindInteriorsProject_TR.ESP", None),
-    ("Waterfalls Tweaks.esp", None),
     ("k_weather.esp", None),
     ("OAAB_Saplings OpenMW Patch.ESP", None),
     ("book-jackets.esp", None),
