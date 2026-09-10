@@ -36,7 +36,7 @@ require_tool unrar "e.g. sudo apt install unrar"
 
 if [[ ! -d "$ARCHIVES" ]]; then
     echo "ERROR: archive directory not found: $ARCHIVES" >&2
-    echo "Download the archives listed in mod-list.txt there first." >&2
+    echo "Run ./download_mods.py first (or download the files listed in MODS.md by hand)." >&2
     exit 1
 fi
 
@@ -452,6 +452,9 @@ echo "[20/21] 301 Repopulated Morrowind (Core + main + Bloodmoon + TR)..."
 if have_archive "Repopulated Morrowind*[- ]51174[- ]*" "301 Repopulated Morrowind"; then
     extract_fomod "$ARCHIVE" "$MODS/301_repopulated_morrowind" \
         "00 Core" "01 Repopulated Morrowind" "03 Bloodmoon" "05 Tamriel Rebuilt"
+    # Cutting Room Floor compatibility plugin (used with 605; content= after CRF's Ald Redaynia)
+    tmpdir=$(mktemp -d); 7z x "$ARCHIVE" -o"$tmpdir" "10 Compatability Patches/RepopulatedMorrowind_CRF_AldRedaynia.ESP" -y > /dev/null 2>&1 || true
+    cp -a "$tmpdir/10 Compatability Patches"/. "$MODS/301_repopulated_morrowind"/ 2>/dev/null || true; rm -rf "$tmpdir"
     verify "$MODS/301_repopulated_morrowind" "301 Repopulated Morrowind"
     echo "  NOTE: leave RepopulatedMainland.ESP OUT of content= until RM confirms TR 26.08 support."
     echo "  Done."
@@ -474,8 +477,8 @@ if have_archive "OAAB_Data*[- ]49042[- ]*" "OAAB_Data"; then
 fi
 
 # ===========================================================================
-# ADDITIONS — 2026-09 enhancement plan (all optional; see enhancement_plan_2026-08.md
-# and GAME_NIGHT_RUNBOOK.md). Layouts not yet audited -> extract_auto + review.
+# ADDITIONS — 2026-09 enhancement phases (all optional; see MODS.md
+# and ROADMAP.md). Module picks follow Modding-OpenMW usage notes.
 # ===========================================================================
 
 echo ""
@@ -742,6 +745,104 @@ extract_all "*BookJackets*[- ]56176[- ]*" "504b OAAB Book Jackets (Various Mods 
 
 echo "[ADD] 515 Melchior's Magnificent Manuscripts (00 Core + 01 Book Jackets Patch)..."
 extract_all "*[- ]45626[- ]*" "515 Melchiors Magnificent Manuscripts" "$MODS/515_melchiors_manuscripts" "01 Book Jackets Patch" || true
+
+# ===========================================================================
+# PHASE E — atmosphere (2026-09-10)
+# ===========================================================================
+echo "[ADD] 420 Fireflies (content= RP_fireflies.ESP; needs Tamriel_Data)..."
+extract_all "*[- ]51443[- ]*" "420 Fireflies" "$MODS/420_fireflies" || true
+
+echo "[ADD] 421 Subtle Smoke (textures only)..."
+extract_all "*[- ]47341[- ]*" "421 Subtle Smoke" "$MODS/421_subtle_smoke" || true
+
+echo "[ADD] 422 Simply Walking (Weapon Sheathing Edition, meshes only)..."
+extract_all "Simply Walking Weapon Sheathing Edition*[- ]49785[- ]*" "422 Simply Walking" "$MODS/422_simply_walking" || true
+
+echo "[ADD] 423 Loading Screens Diversified 16:9 (00 Core + 01 Unused Bethesda + 02 New Vanilla Creatures)..."
+# 03 Main Menu Replacer skipped (MET's Interface file owns the menu). settings.cfg [GUI] stretch menu background = true
+extract_all "Loading Screens Diversified - 16x9*[- ]55498[- ]*" "423 Loading Screens Diversified" "$MODS/423_loading_screens_diversified" "01 Unused Bethesda" "02 New Vanilla Creatures" || true
+
+echo "[ADD] 429 H3lp Yours3lf (Lua helper library S3maphore.esp lists as a master; content= before S3maphore)..."
+extract_all "H3lp Yours3lf*[- ]56417[- ]*" "429 H3lp Yours3lf" "$MODS/429_h3lp_yours3lf" || true
+
+echo "[ADD] 430 S3maphore dynamic music (00 Core + TR / MUSE / Vindsvept playlists)..."
+# Playlist packs for provinces/mods we do not run (Cyrodiil, Starwind, Redguard, Nordic Lands, ...) stay out.
+# content= S3maphore.esp. Muse Expansion playlists need the MUSE packs (separate Nexus mods) — not yet.
+extract_all "S3maphore*[- ]56836[- ]*" "430 S3maphore" "$MODS/430_s3maphore" "01 Tamriel Rebuilt Playlists" "03 Muse Expansion Playlists" "04 Vindsvept Solstheim" || true
+
+# The music those playlists point at (MOMW Expanded Vanilla #132–#140; all pluginless, Lua-era).
+echo "[ADD] 431 Tamriel Rebuilt - Original Soundtrack..."
+extract_all "Tamriel Rebuilt Soundtrack*[- ]47254[- ]*" "431 TR Soundtrack" "$MODS/431_tr_soundtrack" || true
+echo "[ADD] 432 Vindsvept Solstheim..."
+extract_all "*Vindsvept Solstheim*[- ]53597[- ]*" "432 Vindsvept Solstheim" "$MODS/432_vindsvept_solstheim" || true
+echo "[ADD] 433-439 MUSE Expansion packs (Hlaalu, Ashlander, Redoran, Sixth House, Daedric, Dwemer, Tomb)..."
+extract_all "MUSE Expansion - Hlaalu*[- ]54639[- ]*" "433 MUSE Hlaalu" "$MODS/433_muse_hlaalu" || true
+extract_all "MUSE Expansion - Ashlander*[- ]51255[- ]*" "434 MUSE Ashlander" "$MODS/434_muse_ashlander" || true
+extract_all "MUSE Expansion - Redoran*[- ]55082[- ]*" "435 MUSE Redoran" "$MODS/435_muse_redoran" || true
+extract_all "MUSE Expansion - Sixth House*[- ]51082[- ]*" "436 MUSE Sixth House" "$MODS/436_muse_sixth_house" || true
+extract_all "MUSE Expansion - Daedric*[- ]51993[- ]*" "437 MUSE Daedric" "$MODS/437_muse_daedric" || true
+extract_all "MUSE Expansion - Dwemer*[- ]51169[- ]*" "438 MUSE Dwemer" "$MODS/438_muse_dwemer" || true
+extract_all "MUSE Expansion - Tomb*[- ]51407[- ]*" "439 MUSE Tomb" "$MODS/439_muse_tomb" || true
+
+# ===========================================================================
+# PHASE H — content: towns, quests, factions (ROADMAP.md / docs/archive/content_plan_2026-09.md tier 1, world half)
+# ===========================================================================
+echo "[ADD] 601 OAAB Grazelands (00 Core + 03 HD Textures + 01 Remiros GL patch for the new landscape)..."
+# content= OAAB_Grazelands.ESP. groundcover: "Rem_GL - OAAB Landscape.esp" REPLACES lush3_gl.esp for the
+# Grazelands (the OAAB landscape moved; Lush's GL plugin has no patch). 02 Old Vos Tradepost: mod not run.
+extract_all "OAAB Grazelands*[- ]49075[- ]*" "601 OAAB Grazelands" "$MODS/601_oaab_grazelands" "01 Remiros Groundcover GL Patch" "03 HD Textures" || true
+
+echo "[ADD] 602 OAAB Tel Mora (00 Core + 01 Female Guards + 02 HD Textures + 03 OpenMW Addons)..."
+# content= "OAAB_Tel Mora.esm", "OAAB_Tel Mora_Female Guards.ESP". 03 MWSE Addons skipped.
+extract_all "OAAB Tel Mora*[- ]46177[- ]*" "602 OAAB Tel Mora" "$MODS/602_oaab_tel_mora" "01 Female Guards" "02 HD Textures" "03 OpenMW Addons" || true
+
+echo "[ADD] 603 OAAB Brother Juniper's Twin Lamps (flat; content= 'OAAB Brother Junipers Twin Lamps.esp')..."
+extract_all "OAAB Juniper's Twin Lamps*[- ]51424[- ]*" "603 OAAB Twin Lamps" "$MODS/603_oaab_twin_lamps" || true
+
+echo "[ADD] 604 AFFresh (content= AFFresh.esm)..."
+extract_all "AFFresh*[- ]53006[- ]*" "604 AFFresh" "$MODS/604_affresh" || true
+
+echo "[ADD] 605 Cutting Room Floor - Modular (+ TR patches, HD textures, optimized banner)..."
+# MOMW (Expanded Vanilla) plugin subset is applied by apply_config.py; every ESP is extracted.
+# optimized_banner/ is its own data= line after the root (MOMW).
+CRF_T="$MODS/605_cutting_room_floor"
+if ARCHIVE=$(find_archive "Cutting Room Floor - Modular [0-9]*") && [[ -n "$ARCHIVE" ]]; then
+    echo "  Archive: $(basename "$ARCHIVE")"; rm -rf "$CRF_T"
+    extract_fomod "$ARCHIVE" "$CRF_T" "Cutting Room Floor - Modular"          # unwraps its Data Files
+    if ARCHIVE=$(find_archive "Cutting Room Floor - Modular Patches*[- ]47307[- ]*") && [[ -n "$ARCHIVE" ]]; then
+        echo "  Archive: $(basename "$ARCHIVE")  (Tamriel Rebuilt patches only; Anthology/TOTSP not run)"
+        extract_fomod "$ARCHIVE" "$CRF_T" "Cutting Room Floor - Modular Patches/Tamriel Rebuilt"
+    fi
+    if ARCHIVE=$(find_archive "Cutting Room Floor - High Resolution Textures*[- ]47307[- ]*") && [[ -n "$ARCHIVE" ]]; then
+        echo "  Archive: $(basename "$ARCHIVE")"; extract_fomod "$ARCHIVE" "$CRF_T" "Cutting Room Floor - High Resolution Textures"
+    fi
+    if ARCHIVE=$(find_archive "Cutting Room Floor - Optimized Banner*[- ]47307[- ]*") && [[ -n "$ARCHIVE" ]]; then
+        echo "  Archive: $(basename "$ARCHIVE")  -> optimized_banner/"; extract_datafiles "$ARCHIVE" "$CRF_T/optimized_banner"
+    fi
+    rm -rf "$CRF_T/Splash"   # MOMW: "recommended to delete the Splash folder"
+    verify "$CRF_T" "605 Cutting Room Floor"; echo "  Done."
+else
+    echo "  (not downloaded — skipping; pattern: Cutting Room Floor - Modular*)"; NOTES+=("605 Cutting Room Floor: not downloaded")
+fi
+
+echo "[ADD] 606 Roaring Arena (00 Core + OAAB/MageRobes/Solstheim optional plugins; vanilla Vivec)..."
+# No BCOM/GDoV/GtC/Rethinking Vivec -> no "02 Vivec Options" folder needed; 01 MWSE skipped.
+# content= RoaringArena.esm, RoaringArena.ESP, RoaringArena_OAAB.ESP, RoaringArena_MageRobes.ESP, RoaringArena_Solstheim.ESP
+# "Empty Generated Voice Lines" -> noVO/ (own data= line AFTER the root, only if you want the AI-voiced
+# arena speeches silenced — MOMW's default; ours keeps the voices, see runbook).
+RA_T="$MODS/606_roaring_arena"
+if ARCHIVE=$(find_archive "Roaring Arena [0-9]*") && [[ -n "$ARCHIVE" ]]; then
+    echo "  Archive: $(basename "$ARCHIVE")"; rm -rf "$RA_T"
+    extract_fomod "$ARCHIVE" "$RA_T" "00 Core" "07 Optional Plugins/BloodmoonOptions/01 Bloodmoon"
+    tmpdir=$(mktemp -d); 7z x "$ARCHIVE" -o"$tmpdir" "07 Optional Plugins/RoaringArena_OAAB.ESP" "07 Optional Plugins/RoaringArena_MageRobes.ESP" -y > /dev/null 2>&1 || true
+    cp -a "$tmpdir/07 Optional Plugins"/. "$RA_T"/ 2>/dev/null || true; rm -rf "$tmpdir"
+    if ARCHIVE=$(find_archive "Empty Generated Voice Lines*[- ]50954[- ]*") && [[ -n "$ARCHIVE" ]]; then
+        echo "  Archive: $(basename "$ARCHIVE")  -> noVO/ (optional)"; extract_datafiles "$ARCHIVE" "$RA_T/noVO"
+    fi
+    verify "$RA_T" "606 Roaring Arena"; echo "  Done."
+else
+    echo "  (not downloaded — skipping; pattern: Roaring Arena*)"; NOTES+=("606 Roaring Arena: not downloaded")
+fi
 
 echo "[ADD] 5xx GitLab Lua QoL mods (UI Modes, Pause Control, Friendly Autosave, ...) —"
 echo "      handled by: ./update_gitlab_mods.sh qol"

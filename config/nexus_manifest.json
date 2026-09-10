@@ -10,60 +10,752 @@
   ],
   "game": "morrowind",
   "mods": [
-    {"id": 45096, "name": "Patch for Purists", "folder": "001_patch_for_purists", "files": [{"match": "Patch for Purists-*"}]},
-    {"id": 43931, "name": "Unofficial Morrowind Official Plugins Patched", "folder": "002_umopp", "files": [{"match": "Unofficial Morrowind Official Plugins Patched*"}]},
-    {"id": 47588, "name": "Expansion Delay", "folder": "003_expansion_delay", "files": [{"match": "Expansion Delay*"}]},
-    {"id": 45384, "name": "Morrowind Optimization Patch", "folder": "004_morrowind_optimization_patch", "files": [{"match": "Morrowind Optimization Patch*"}]},
-    {"id": 59927, "name": "Tamriel_Data (HD)", "folder": "005_tamriel_data", "files": [{"match": "Tamriel Data (HD)*"}]},
-    {"id": 42145, "name": "Tamriel Rebuilt", "folder": "006_tamriel_rebuilt", "files": [{"match": "Tamriel Rebuilt*"}]},
-    {"id": 49042, "name": "OAAB_Data", "folder": "OAAB_Data", "files": [{"match": "OAAB_Data-*"}]},
-    {"id": 46599, "name": "Graphic Herbalism - MWSE and OpenMW Edition", "folder": "101_graphic_herbalism", "files": [{"match": "Graphic Herbalism MWSE - OpenMW*"}]},
-    {"id": 46069, "name": "Weapon Sheathing", "folder": "103_weapon_sheathing", "files": [{"match": "WeaponSheathing*OpenMW*"}]},
-    {"id": 45399, "name": "Project Atlas", "folder": "104_project_atlas", "files": [{"match": "Project Atlas-*"}]},
-    {"id": 46221, "name": "Morrowind Enhanced Textures", "folder": "105_morrowind_enhanced_textures", "files": [
-      {"match": "Morrowind Enhanced Textures 6*"}, {"match": "Interface and main menu*"}, {"match": "MET 6 Atlas textures*"}]},
-    {"id": 50093, "name": "Familiar Faces", "folder": "106_familiar_faces", "files": [{"match": "Familiar Faces*"}]},
-    {"id": 46232, "name": "OpenMW Containers Animated", "folder": "201_containers_animated", "files": [{"match": "OpenMW Containers Animated*"}]},
-    {"id": 45886, "name": "Glow in the Dahrk 2.11.2 (Old files — 3.x is MWSE-only)", "folder": "202_glow_in_the_dahrk", "files": [{"match": "Glow in the Dahrk*", "category": "old", "version": "2.11.2"}]},
-    {"id": 50087, "name": "Nords Shut Your Windows", "folder": "203_nords_shut_your_windows", "files": [{"match": "Nords shut your windows*"}]},
-    {"id": 46854, "name": "TrueType Fonts for OpenMW", "folder": "204_truetype_fonts", "files": [{"match": "Fonts*"}]},
-    {"id": 50534, "name": "Cantons on the Global Map", "folder": "205_cantons_global_map", "files": [{"match": "Cantons_on_the_Global_Map*"}]},
-    {"id": 50796, "name": "Distant Seafloor for OpenMW", "folder": "206_distant_seafloor", "files": [{"match": "Distant_Seafloor*"}]},
-    {"id": 51174, "name": "Repopulated Morrowind", "folder": "301_repopulated_morrowind", "files": [{"match": "Repopulated Morrowind*"}]},
-    {"id": 55628, "name": "Repopulated Creatures", "folder": "302_repopulated_creatures", "files": [{"match": "Repopulated Creatures*"}]},
-
-    {"id": 52931, "name": "Lush Synthesis 3.0", "folder": "402_lush_synthesis", "optional": true, "files": [{"match": "Lush Synthesis 3*"}]},
-    {"id": 60006, "name": "Fantasia Grass Mod - Lush Synthesis TR Update", "folder": "418_lush_synthesis_tr", "optional": true, "files": [{"match": "Lush Synthesis TR*"}]},
-    {"id": 46733, "name": "Remiros' Groundcover", "folder": "403_remiros_groundcover", "optional": true, "files": [{"match": "Remiros' Groundcover*"}]},
-    {"id": 54261, "name": "Remiros Groundcover Textures Improvement", "folder": "404_remiros_groundcover_textures", "optional": true, "files": [{"match": "remiros_groundcover_textures_improvement*"}]},
-    {"id": 43311, "name": "Skies .IV", "folder": "405_skies_iv", "optional": true, "files": [{"match": "Skies*"}]},
-    {"id": 43246, "name": "New Starfields", "folder": "406_new_starfields", "optional": true, "files": [{"match": "New Starfields*"}]},
-    {"id": 45336, "name": "Normal Maps for Morrowind (7 modules)", "folder": "407_normal_maps_for_morrowind", "optional": true, "files": [
-      {"match": "01a Shacks docks and ships*"}, {"match": "03 Telvanni*"}, {"match": "04 Daedric*"}, {"match": "05 Redoran*"},
-      {"match": "07 Terrain*"}, {"match": "08 Rocks*"}, {"match": "09b Swirlwood*"}]},
-    {"id": 52567, "name": "Normal Maps for Everything (5 packs)", "folder": "408_normal_maps_for_everything", "optional": true, "files": [
-      {"match": "Vanilla Textures Normal Mapped*"}, {"match": "Atlas Textures*Normal Mapped*"}, {"match": "Morrowind Enhanced Textures Normal Mapped*"},
-      {"match": "OAAB Data*Normal Mapped*"}, {"match": "Tamriel*Data*Normal Mapped*", "optional": true}]},
-    {"id": 58029, "name": "Glow in the Dahrk - Normal and Specular Maps", "folder": "409_gitd_normal_pbr", "optional": true, "files": [{"match": "*Normal and Specular*"}]},
-    {"id": 53935, "name": "Facelift for Tamriel Data", "folder": "410_facelift_tamriel_data", "optional": true, "files": [{"match": "Facelift_TR_Meshes*"}, {"match": "Facelift_TR_Textures*"}]},
-    {"id": 52237, "name": "Morrowind Interiors Project", "folder": "411_morrowind_interiors_project", "optional": true, "files": [{"match": "Morrowind Interiors Project-*"}, {"match": "Morrowind Interiors Project - Bloodmoon*"}]},
-    {"id": 45424, "name": "Better Waterfalls", "folder": "412_better_waterfalls", "optional": true, "files": [{"match": "Better Waterfalls*"}]},
-    {"id": 55392, "name": "OpenMW More Dynamic Water Meshes", "folder": "414_more_dynamic_water_meshes", "optional": true, "files": [{"match": "*Dynamic Water Meshes*"}]},
-    {"id": 51463, "name": "Improved Lights for All Shaders", "folder": "415_improved_lights_all_shaders", "optional": true, "files": [{"match": "ILFAS*"}]},
-    {"id": 49278, "name": "Kirel's Interior Weather (cleaned)", "folder": "416_kirels_interior_weather", "optional": true, "files": [{"match": "*Cleaned and updated*"}]},
-    {"id": 50334, "name": "OAAB Saplings", "folder": "417_oaab_saplings", "optional": true, "files": [{"match": "OAAB Saplings*"}]},
-    {"id": 48273, "name": "LDM - Context Matters", "folder": "501_ldm_context_matters", "optional": true, "files": [{"match": "LDM - Context Matters*"}]},
-    {"id": 46992, "name": "Protective Guards (OpenMW)", "folder": "502_protective_guards", "optional": true, "files": [{"match": "Protective Guards*"}]},
-    {"id": 43100, "name": "Arukinns Better Books and Scrolls", "folder": "514_arukinns_better_books", "optional": true, "files": [{"match": "Arukinns Better Books*"}]},
-    {"id": 45626, "name": "Melchior's Magnificent Manuscripts", "folder": "515_melchiors_manuscripts", "optional": true, "files": [{"match": "Melchior*Magnificent Manuscripts*"}]},
-    {"id": 55402, "name": "Book Jackets Complete Collection HD", "folder": "504_book_jackets_hd", "optional": true, "files": [{"match": "Book Jackets Complete Collection HD*"}]},
-    {"id": 56176, "name": "Various Mods and Patches — OAAB Book Jackets", "folder": "504_book_jackets_hd", "optional": true, "files": [{"match": "OAAB_BookJackets*"}]}
+    {
+      "id": 45096,
+      "name": "Patch for Purists",
+      "folder": "001_patch_for_purists",
+      "files": [
+        {
+          "match": "Patch for Purists-*"
+        }
+      ]
+    },
+    {
+      "id": 43931,
+      "name": "Unofficial Morrowind Official Plugins Patched",
+      "folder": "002_umopp",
+      "files": [
+        {
+          "match": "Unofficial Morrowind Official Plugins Patched*"
+        }
+      ]
+    },
+    {
+      "id": 47588,
+      "name": "Expansion Delay",
+      "folder": "003_expansion_delay",
+      "files": [
+        {
+          "match": "Expansion Delay*"
+        }
+      ]
+    },
+    {
+      "id": 45384,
+      "name": "Morrowind Optimization Patch",
+      "folder": "004_morrowind_optimization_patch",
+      "files": [
+        {
+          "match": "Morrowind Optimization Patch*"
+        }
+      ]
+    },
+    {
+      "id": 59927,
+      "name": "Tamriel_Data (HD)",
+      "folder": "005_tamriel_data",
+      "files": [
+        {
+          "match": "Tamriel Data (HD)*"
+        }
+      ]
+    },
+    {
+      "id": 42145,
+      "name": "Tamriel Rebuilt",
+      "folder": "006_tamriel_rebuilt",
+      "files": [
+        {
+          "match": "Tamriel Rebuilt*"
+        }
+      ]
+    },
+    {
+      "id": 49042,
+      "name": "OAAB_Data",
+      "folder": "OAAB_Data",
+      "files": [
+        {
+          "match": "OAAB_Data-*"
+        }
+      ]
+    },
+    {
+      "id": 46599,
+      "name": "Graphic Herbalism - MWSE and OpenMW Edition",
+      "folder": "101_graphic_herbalism",
+      "files": [
+        {
+          "match": "Graphic Herbalism MWSE - OpenMW*"
+        }
+      ]
+    },
+    {
+      "id": 46069,
+      "name": "Weapon Sheathing",
+      "folder": "103_weapon_sheathing",
+      "files": [
+        {
+          "match": "WeaponSheathing*OpenMW*"
+        }
+      ]
+    },
+    {
+      "id": 45399,
+      "name": "Project Atlas",
+      "folder": "104_project_atlas",
+      "files": [
+        {
+          "match": "Project Atlas-*"
+        }
+      ]
+    },
+    {
+      "id": 46221,
+      "name": "Morrowind Enhanced Textures",
+      "folder": "105_morrowind_enhanced_textures",
+      "files": [
+        {
+          "match": "Morrowind Enhanced Textures 6*"
+        },
+        {
+          "match": "Interface and main menu*"
+        },
+        {
+          "match": "MET 6 Atlas textures*"
+        }
+      ]
+    },
+    {
+      "id": 50093,
+      "name": "Familiar Faces",
+      "folder": "106_familiar_faces",
+      "files": [
+        {
+          "match": "Familiar Faces*"
+        }
+      ]
+    },
+    {
+      "id": 46232,
+      "name": "OpenMW Containers Animated",
+      "folder": "201_containers_animated",
+      "files": [
+        {
+          "match": "OpenMW Containers Animated*"
+        }
+      ]
+    },
+    {
+      "id": 45886,
+      "name": "Glow in the Dahrk 2.11.2 (Old files — 3.x is MWSE-only)",
+      "folder": "202_glow_in_the_dahrk",
+      "files": [
+        {
+          "match": "Glow in the Dahrk*",
+          "category": "old",
+          "version": "2.11.2"
+        }
+      ]
+    },
+    {
+      "id": 50087,
+      "name": "Nords Shut Your Windows",
+      "folder": "203_nords_shut_your_windows",
+      "files": [
+        {
+          "match": "Nords shut your windows*"
+        }
+      ]
+    },
+    {
+      "id": 46854,
+      "name": "TrueType Fonts for OpenMW",
+      "folder": "204_truetype_fonts",
+      "files": [
+        {
+          "match": "Fonts*"
+        }
+      ]
+    },
+    {
+      "id": 50534,
+      "name": "Cantons on the Global Map",
+      "folder": "205_cantons_global_map",
+      "files": [
+        {
+          "match": "Cantons_on_the_Global_Map*"
+        }
+      ]
+    },
+    {
+      "id": 50796,
+      "name": "Distant Seafloor for OpenMW",
+      "folder": "206_distant_seafloor",
+      "files": [
+        {
+          "match": "Distant_Seafloor*"
+        }
+      ]
+    },
+    {
+      "id": 51174,
+      "name": "Repopulated Morrowind",
+      "folder": "301_repopulated_morrowind",
+      "files": [
+        {
+          "match": "Repopulated Morrowind*"
+        }
+      ]
+    },
+    {
+      "id": 55628,
+      "name": "Repopulated Creatures",
+      "folder": "302_repopulated_creatures",
+      "files": [
+        {
+          "match": "Repopulated Creatures*"
+        }
+      ]
+    },
+    {
+      "id": 52931,
+      "name": "Lush Synthesis 3.0",
+      "folder": "402_lush_synthesis",
+      "optional": true,
+      "files": [
+        {
+          "match": "Lush Synthesis 3*"
+        }
+      ]
+    },
+    {
+      "id": 60006,
+      "name": "Fantasia Grass Mod - Lush Synthesis TR Update",
+      "folder": "418_lush_synthesis_tr",
+      "optional": true,
+      "files": [
+        {
+          "match": "Lush Synthesis TR*"
+        }
+      ]
+    },
+    {
+      "id": 46733,
+      "name": "Remiros' Groundcover",
+      "folder": "403_remiros_groundcover",
+      "optional": true,
+      "files": [
+        {
+          "match": "Remiros' Groundcover*"
+        }
+      ]
+    },
+    {
+      "id": 54261,
+      "name": "Remiros Groundcover Textures Improvement",
+      "folder": "404_remiros_groundcover_textures",
+      "optional": true,
+      "files": [
+        {
+          "match": "remiros_groundcover_textures_improvement*"
+        }
+      ]
+    },
+    {
+      "id": 43311,
+      "name": "Skies .IV",
+      "folder": "405_skies_iv",
+      "optional": true,
+      "files": [
+        {
+          "match": "Skies*"
+        }
+      ]
+    },
+    {
+      "id": 43246,
+      "name": "New Starfields",
+      "folder": "406_new_starfields",
+      "optional": true,
+      "files": [
+        {
+          "match": "New Starfields*"
+        }
+      ]
+    },
+    {
+      "id": 45336,
+      "name": "Normal Maps for Morrowind (7 modules)",
+      "folder": "407_normal_maps_for_morrowind",
+      "optional": true,
+      "files": [
+        {
+          "match": "01a Shacks docks and ships*"
+        },
+        {
+          "match": "03 Telvanni*"
+        },
+        {
+          "match": "04 Daedric*"
+        },
+        {
+          "match": "05 Redoran*"
+        },
+        {
+          "match": "07 Terrain*"
+        },
+        {
+          "match": "08 Rocks*"
+        },
+        {
+          "match": "09b Swirlwood*"
+        }
+      ]
+    },
+    {
+      "id": 52567,
+      "name": "Normal Maps for Everything (5 packs)",
+      "folder": "408_normal_maps_for_everything",
+      "optional": true,
+      "files": [
+        {
+          "match": "Vanilla Textures Normal Mapped*"
+        },
+        {
+          "match": "Atlas Textures*Normal Mapped*"
+        },
+        {
+          "match": "Morrowind Enhanced Textures Normal Mapped*"
+        },
+        {
+          "match": "OAAB Data*Normal Mapped*"
+        },
+        {
+          "match": "Tamriel*Data*Normal Mapped*",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": 58029,
+      "name": "Glow in the Dahrk - Normal and Specular Maps",
+      "folder": "409_gitd_normal_pbr",
+      "optional": true,
+      "files": [
+        {
+          "match": "*Normal and Specular*"
+        }
+      ]
+    },
+    {
+      "id": 53935,
+      "name": "Facelift for Tamriel Data",
+      "folder": "410_facelift_tamriel_data",
+      "optional": true,
+      "files": [
+        {
+          "match": "Facelift_TR_Meshes*"
+        },
+        {
+          "match": "Facelift_TR_Textures*"
+        }
+      ]
+    },
+    {
+      "id": 52237,
+      "name": "Morrowind Interiors Project",
+      "folder": "411_morrowind_interiors_project",
+      "optional": true,
+      "files": [
+        {
+          "match": "Morrowind Interiors Project-*"
+        },
+        {
+          "match": "Morrowind Interiors Project - Bloodmoon*"
+        }
+      ]
+    },
+    {
+      "id": 45424,
+      "name": "Better Waterfalls",
+      "folder": "412_better_waterfalls",
+      "optional": true,
+      "files": [
+        {
+          "match": "Better Waterfalls*"
+        }
+      ]
+    },
+    {
+      "id": 55392,
+      "name": "OpenMW More Dynamic Water Meshes",
+      "folder": "414_more_dynamic_water_meshes",
+      "optional": true,
+      "files": [
+        {
+          "match": "*Dynamic Water Meshes*"
+        }
+      ]
+    },
+    {
+      "id": 51463,
+      "name": "Improved Lights for All Shaders",
+      "folder": "415_improved_lights_all_shaders",
+      "optional": true,
+      "files": [
+        {
+          "match": "ILFAS*"
+        }
+      ]
+    },
+    {
+      "id": 49278,
+      "name": "Kirel's Interior Weather (cleaned)",
+      "folder": "416_kirels_interior_weather",
+      "optional": true,
+      "files": [
+        {
+          "match": "*Cleaned and updated*"
+        }
+      ]
+    },
+    {
+      "id": 50334,
+      "name": "OAAB Saplings",
+      "folder": "417_oaab_saplings",
+      "optional": true,
+      "files": [
+        {
+          "match": "OAAB Saplings*"
+        }
+      ]
+    },
+    {
+      "id": 48273,
+      "name": "LDM - Context Matters",
+      "folder": "501_ldm_context_matters",
+      "optional": true,
+      "files": [
+        {
+          "match": "LDM - Context Matters*"
+        }
+      ]
+    },
+    {
+      "id": 46992,
+      "name": "Protective Guards (OpenMW)",
+      "folder": "502_protective_guards",
+      "optional": true,
+      "files": [
+        {
+          "match": "Protective Guards*"
+        }
+      ]
+    },
+    {
+      "id": 43100,
+      "name": "Arukinns Better Books and Scrolls",
+      "folder": "514_arukinns_better_books",
+      "optional": true,
+      "files": [
+        {
+          "match": "Arukinns Better Books*"
+        }
+      ]
+    },
+    {
+      "id": 45626,
+      "name": "Melchior's Magnificent Manuscripts",
+      "folder": "515_melchiors_manuscripts",
+      "optional": true,
+      "files": [
+        {
+          "match": "Melchior*Magnificent Manuscripts*"
+        }
+      ]
+    },
+    {
+      "id": 55402,
+      "name": "Book Jackets Complete Collection HD",
+      "folder": "504_book_jackets_hd",
+      "optional": true,
+      "files": [
+        {
+          "match": "Book Jackets Complete Collection HD*"
+        }
+      ]
+    },
+    {
+      "id": 56176,
+      "name": "Various Mods and Patches — OAAB Book Jackets",
+      "folder": "504_book_jackets_hd",
+      "optional": true,
+      "files": [
+        {
+          "match": "OAAB_BookJackets*"
+        }
+      ]
+    },
+    {
+      "id": 49075,
+      "name": "OAAB Grazelands",
+      "folder": "601_oaab_grazelands",
+      "optional": true,
+      "files": [
+        {
+          "match": "OAAB Grazelands*"
+        }
+      ]
+    },
+    {
+      "id": 46177,
+      "name": "OAAB Tel Mora",
+      "folder": "602_oaab_tel_mora",
+      "optional": true,
+      "files": [
+        {
+          "match": "OAAB Tel Mora*"
+        }
+      ]
+    },
+    {
+      "id": 51424,
+      "name": "OAAB Brother Juniper's Twin Lamps",
+      "folder": "603_oaab_twin_lamps",
+      "optional": true,
+      "files": [
+        {
+          "match": "OAAB Juniper's Twin Lamps*",
+          "category": "main"
+        }
+      ]
+    },
+    {
+      "id": 53006,
+      "name": "AFFresh",
+      "folder": "604_affresh",
+      "optional": true,
+      "files": [
+        {
+          "match": "AFFresh*",
+          "category": "main"
+        }
+      ]
+    },
+    {
+      "id": 47307,
+      "name": "Cutting Room Floor - Modular (+ patches, HD textures, optimized banner)",
+      "folder": "605_cutting_room_floor",
+      "optional": true,
+      "files": [
+        {
+          "match": "Cutting Room Floor - Modular [0-9]*"
+        },
+        {
+          "match": "Cutting Room Floor - Modular Patches*"
+        },
+        {
+          "match": "Cutting Room Floor - High Resolution Textures*"
+        },
+        {
+          "match": "Cutting Room Floor - Optimized Banner*"
+        }
+      ]
+    },
+    {
+      "id": 50954,
+      "name": "Roaring Arena - Betting and Bloodletting",
+      "folder": "606_roaring_arena",
+      "optional": true,
+      "files": [
+        {
+          "match": "Roaring Arena [0-9]*",
+          "category": "main"
+        },
+        {
+          "match": "Empty Generated Voice Lines*"
+        }
+      ]
+    },
+    {
+      "id": 56417,
+      "name": "H3lp Yours3lf (S3maphore's required library)",
+      "folder": "429_h3lp_yours3lf",
+      "optional": true,
+      "files": [
+        {
+          "match": "H3lp Yours3lf*",
+          "category": "main"
+        }
+      ]
+    },
+    {
+      "id": 56836,
+      "name": "S3maphore (dynamic music)",
+      "folder": "430_s3maphore",
+      "optional": true,
+      "files": [
+        {
+          "match": "S3maphore*",
+          "category": "main"
+        }
+      ]
+    },
+    {
+      "id": 51443,
+      "name": "Fireflies",
+      "folder": "420_fireflies",
+      "optional": true,
+      "files": [
+        {
+          "match": "RP*Fireflies*"
+        }
+      ]
+    },
+    {
+      "id": 47341,
+      "name": "Subtle Smoke",
+      "folder": "421_subtle_smoke",
+      "optional": true,
+      "files": [
+        {
+          "match": "Subtle Smoke*"
+        }
+      ]
+    },
+    {
+      "id": 49785,
+      "name": "Simply Walking (Weapon Sheathing Edition)",
+      "folder": "422_simply_walking",
+      "optional": true,
+      "files": [
+        {
+          "match": "Simply Walking Weapon Sheathing Edition*",
+          "category": "main"
+        }
+      ]
+    },
+    {
+      "id": 55498,
+      "name": "Loading Screens Diversified (16:9)",
+      "folder": "423_loading_screens_diversified",
+      "optional": true,
+      "files": [
+        {
+          "match": "Loading Screens Diversified - 16x9*",
+          "category": "main"
+        }
+      ]
+    },
+    {
+      "id": 47254,
+      "name": "Tamriel Rebuilt - Original Soundtrack",
+      "folder": "431_tr_soundtrack",
+      "optional": true,
+      "files": [
+        {
+          "match": "Tamriel Rebuilt Soundtrack*"
+        }
+      ]
+    },
+    {
+      "id": 53597,
+      "name": "Vindsvept Solstheim (Dynamic Music / S3maphore)",
+      "folder": "432_vindsvept_solstheim",
+      "optional": true,
+      "files": [
+        {
+          "match": "*Vindsvept Solstheim*"
+        }
+      ]
+    },
+    {
+      "id": 54639,
+      "name": "MUSE Expansion - Hlaalu",
+      "folder": "433_muse_hlaalu",
+      "optional": true,
+      "files": [
+        {
+          "match": "MUSE Expansion - Hlaalu*"
+        }
+      ]
+    },
+    {
+      "id": 51255,
+      "name": "MUSE Expansion - Ashlander",
+      "folder": "434_muse_ashlander",
+      "optional": true,
+      "files": [
+        {
+          "match": "MUSE Expansion - Ashlander*"
+        }
+      ]
+    },
+    {
+      "id": 55082,
+      "name": "MUSE Expansion - Redoran",
+      "folder": "435_muse_redoran",
+      "optional": true,
+      "files": [
+        {
+          "match": "MUSE Expansion - Redoran*"
+        }
+      ]
+    },
+    {
+      "id": 51082,
+      "name": "MUSE Expansion - Sixth House",
+      "folder": "436_muse_sixth_house",
+      "optional": true,
+      "files": [
+        {
+          "match": "MUSE Expansion - Sixth House*"
+        }
+      ]
+    },
+    {
+      "id": 51993,
+      "name": "MUSE Expansion - Daedric",
+      "folder": "437_muse_daedric",
+      "optional": true,
+      "files": [
+        {
+          "match": "MUSE Expansion - Daedric*"
+        }
+      ]
+    },
+    {
+      "id": 51169,
+      "name": "MUSE Expansion - Dwemer",
+      "folder": "438_muse_dwemer",
+      "optional": true,
+      "files": [
+        {
+          "match": "MUSE Expansion - Dwemer*"
+        }
+      ]
+    },
+    {
+      "id": 51407,
+      "name": "MUSE Expansion - Tomb",
+      "folder": "439_muse_tomb",
+      "optional": true,
+      "files": [
+        {
+          "match": "MUSE Expansion - Tomb*"
+        }
+      ]
+    }
   ],
   "urls": [
-    {"name": "MOMW Post Processing Pack", "folder": "401_momw_post_processing_pack",
-     "url": "https://gitlab.com/api/v4/projects/modding-openmw%2Fmomw-post-processing-pack/jobs/artifacts/master/raw/momw-post-processing-pack.zip?job=make",
-     "sha256_url": "https://gitlab.com/api/v4/projects/modding-openmw%2Fmomw-post-processing-pack/jobs/artifacts/master/raw/momw-post-processing-pack.zip.sha256sum.txt?job=make",
-     "file_name": "momw-post-processing-pack.zip"}
+    {
+      "name": "MOMW Post Processing Pack",
+      "folder": "401_momw_post_processing_pack",
+      "url": "https://gitlab.com/api/v4/projects/modding-openmw%2Fmomw-post-processing-pack/jobs/artifacts/master/raw/momw-post-processing-pack.zip?job=make",
+      "sha256_url": "https://gitlab.com/api/v4/projects/modding-openmw%2Fmomw-post-processing-pack/jobs/artifacts/master/raw/momw-post-processing-pack.zip.sha256sum.txt?job=make",
+      "file_name": "momw-post-processing-pack.zip"
+    }
   ],
   "gitlab_lua": "run ./update_gitlab_mods.sh all — the 11 MOMW GitLab Lua mods are not Nexus downloads"
 }

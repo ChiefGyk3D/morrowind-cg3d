@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the 2026-09 build to openmw.cfg + settings.cfg (Runbook A5 + A6).
+"""Apply the 2026-09 build to openmw.cfg + settings.cfg (RUNBOOK.md step 1.5).
 
 Idempotent and measured: every data= line is added only if the folder exists
 and is non-empty; every content=/groundcover= line only if that plugin file
@@ -67,6 +67,30 @@ DATA_ADDITIONS = [
     ("511_convenient_thief_tools", None),
     ("512_smart_ammo", None),
     ("513_shield_unequipper", None),
+    # Phase E atmosphere + music (2026-09-10)
+    ("420_fireflies", None),
+    ("421_subtle_smoke", None),
+    ("422_simply_walking", None),
+    ("423_loading_screens_diversified", None),
+    ("429_h3lp_yours3lf", None),
+    ("430_s3maphore", None),
+    ("431_tr_soundtrack", None),
+    ("432_vindsvept_solstheim", None),
+    ("433_muse_hlaalu", None),
+    ("434_muse_ashlander", None),
+    ("435_muse_redoran", None),
+    ("436_muse_sixth_house", None),
+    ("437_muse_daedric", None),
+    ("438_muse_dwemer", None),
+    ("439_muse_tomb", None),
+    # Phase H content, tier 1 world half (2026-09-10)
+    ("601_oaab_grazelands", None),
+    ("602_oaab_tel_mora", None),
+    ("603_oaab_twin_lamps", None),
+    ("604_affresh", None),
+    ("605_cutting_room_floor", None),
+    ("605_cutting_room_floor/optimized_banner", None),
+    ("606_roaring_arena", None),
 ]
 
 CONTENT_REMOVE = [
@@ -94,6 +118,35 @@ CONTENT_ESP = [
     ("book-jackets.esp", None),
     ("OAAB_BookJackets.omwaddon", None),
     ("LDM - Context Matters 1.7.ESP", None),
+    # Phase E
+    ("RP_fireflies.ESP", None),
+    ("H3lp Yours3lf.esp", "RP_fireflies.ESP"),   # master of S3maphore.esp
+    ("S3maphore.esp", None),
+    # Phase H tier 1 (world half). Masters first: AFFresh.esm, OAAB_Tel Mora.esm, RoaringArena.esm
+    ("AFFresh.esm", None),
+    ("OAAB_Tel Mora.esm", None),
+    ("OAAB_Tel Mora_Female Guards.ESP", None),
+    ("OAAB_Grazelands.ESP", None),
+    ("OAAB Brother Junipers Twin Lamps.esp", None),
+    ("RoaringArena.esm", None),
+    ("RoaringArena.ESP", None),
+    ("RoaringArena_OAAB.ESP", None),
+    ("RoaringArena_MageRobes.ESP", None),
+    ("RoaringArena_Solstheim.ESP", None),
+    # Cutting Room Floor: the Modular subset MOMW Expanded Vanilla enables (no Snow Prince: no TOTSP)
+    ("Cutting Room Floor - Free Slaves.esp", None),
+    ("Cutting Room Floor - Characters.esp", None),
+    ("Cutting Room Floor - Missing Persons TR.esp", None),
+    ("Cutting Room Floor - Dead Heroes.esp", None),
+    ("Cutting Room Floor - Extra Jobs.esp", None),
+    ("Cutting Room Floor - Extra Orders.esp", None),
+    ("Cutting Room Floor - Quests.esp", None),
+    ("Cutting Room Floor - Items TR.esp", None),
+    ("Cutting Room Floor - Voice Lines.esp", None),
+    ("Cutting Room Floor - Herders.esp", None),
+    ("Cutting Room Floor - Ald Redaynia.esp", None),
+    ("Cutting Room Floor - Ald-ruhn Underground.esp", None),
+    ("RepopulatedMorrowind_CRF_AldRedaynia.ESP", "Cutting Room Floor - Ald Redaynia.esp"),
 ]
 CONTENT_SCRIPTS = [
     "protective_guards.omwscripts",
@@ -101,8 +154,9 @@ CONTENT_SCRIPTS = [
     "QuickSelect.omwscripts", "go-home.omwscripts", "LightHotkey.omwscripts",
     "convenient-thief-tools.omwscripts", "smart-ammo.omwscripts", "shield-unequipper.omwscripts",
 ]
+GROUNDCOVER_REMOVE = ["lush3_gl.esp"]   # Grazelands grass now comes from OAAB Grazelands' Remiros patch
 GROUNDCOVER = [
-    "lush3_ac.esp", "lush3_ai.esp", "lush3_bc.esp", "lush3_gl.esp", "lush3_wg.esp",
+    "lush3_ac.esp", "lush3_ai.esp", "lush3_bc.esp", "Rem_GL - OAAB Landscape.esp", "lush3_wg.esp",
     "Rem_AL.esp", "lush3_SO_BM.esp", "lush3_RI_BM.esp", "lush3_SE_BM.esp",
     "OAAB_Saplings.esm", "lush3_TR_merged.esp",
 ]
@@ -196,6 +250,14 @@ def apply_openmw_cfg(dry):
             continue
         idxs = content_indices()
         lines.insert(idxs[-1] + 1, f"content={real}"); plan.append(f"  + content (lua): {real}")
+
+    # groundcover= removals (only when the replacement is actually installed)
+    for name in GROUNDCOVER_REMOVE:
+        if find_plugin("Rem_GL - OAAB Landscape.esp", data_dirs):
+            before = len(lines)
+            lines = [l for l in lines if l.strip().lower() != f"groundcover={name}".lower()]
+            if len(lines) != before:
+                plan.append(f"  - groundcover: {name}")
 
     # groundcover=
     for name in GROUNDCOVER:

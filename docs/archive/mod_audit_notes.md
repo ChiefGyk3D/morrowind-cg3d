@@ -1,3 +1,5 @@
+> **ARCHIVED 2026-09-10.** Superseded by `MODS.md`, `RUNBOOK.md`, `ROADMAP.md` and `TOOLS.md` at the repo root. Kept for history; do not follow it.
+
 # Mod Audit: Per-Mod Notes & Findings
 
 > **STATUS: TESTING — YMMV.** "Installed correctly" below means the files are in

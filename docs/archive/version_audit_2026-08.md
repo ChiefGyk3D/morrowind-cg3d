@@ -1,3 +1,5 @@
+> **ARCHIVED 2026-09-10.** Superseded by `MODS.md`, `RUNBOOK.md`, `ROADMAP.md` and `TOOLS.md` at the repo root. Kept for history; do not follow it.
+
 # Version Audit — August 28, 2026
 
 > **STATUS: TESTING — YMMV.** Research-based audit of the build (last audited

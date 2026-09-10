@@ -1,3 +1,5 @@
+> **ARCHIVED 2026-09-10.** Superseded by `MODS.md`, `RUNBOOK.md`, `ROADMAP.md` and `TOOLS.md` at the repo root. Kept for history; do not follow it.
+
 # OpenMW Mod Install Order & Layering Guide
 
 > **STATUS: TESTING — YMMV.** Order below is sourced from MOMW/TR guidance but is

@@ -1,3 +1,5 @@
+> **ARCHIVED 2026-09-10.** Superseded by `MODS.md`, `RUNBOOK.md`, `ROADMAP.md` and `TOOLS.md` at the repo root. Kept for history; do not follow it.
+
 # OpenMW Modding Tools Reference
 
 Tools used in this build, with setup and usage notes.

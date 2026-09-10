@@ -1,3 +1,5 @@
+> **ARCHIVED 2026-09-10.** Superseded by `MODS.md`, `RUNBOOK.md`, `ROADMAP.md` and `TOOLS.md` at the repo root. Kept for history; do not follow it.
+
 # Vanilla-Plus Enhancement Plan — August 2026
 
 > **STATUS: TESTING — YMMV.** For the step-by-step install of this plan see

@@ -137,7 +137,17 @@ def main():
     ap.add_argument("--force", action="store_true", help="re-download existing files")
     ap.add_argument("--dest", default=DEST_DEFAULT)
     ap.add_argument("--manifest", default=MANIFEST)
+    ap.add_argument("--files", nargs="+", type=int, metavar="MOD_ID", help="dump every file Nexus offers for these mod ids, then exit")
     a = ap.parse_args()
+
+    if a.files:
+        nx = Nexus(load_key(), "morrowind")
+        for mid in a.files:
+            files, rem = nx.files(mid)
+            print(f"[{mid}]  ({len(files)} files; API calls left today: {rem})")
+            for f in sorted(files, key=lambda f: (f.get("category_id", 9), -f.get("uploaded_timestamp", 0))):
+                print(f"    {str(f.get('category_name') or '?'):12} v{str(f.get('version') or ''):10} {human(int(f.get('size_in_bytes') or (f.get('size_kb') or 0)*1024 or 0)):>8}  {f.get('file_name')}")
+        return 0
 
     m = json.load(open(a.manifest, encoding="utf-8"))
     os.makedirs(a.dest, exist_ok=True)

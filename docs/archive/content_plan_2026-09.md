@@ -1,3 +1,5 @@
+> **ARCHIVED 2026-09-10.** Superseded by `MODS.md`, `RUNBOOK.md`, `ROADMAP.md` and `TOOLS.md` at the repo root. Kept for history; do not follow it.
+
 # Content plan — more NPCs, more life, more to do (Phase H)
 
 > **STATUS: PLANNED — nothing here is installed yet.** Researched 2026-09-09
