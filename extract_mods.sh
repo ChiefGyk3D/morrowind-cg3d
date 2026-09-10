@@ -47,7 +47,7 @@ fi
 # find_archive GLOB -> prints newest matching file in $ARCHIVES (empty if none)
 find_archive() {
     local glob="$1"
-    find "$ARCHIVES" -maxdepth 1 -type f -iname "$glob" -printf '%T@ %p\n' 2>/dev/null \
+    find "$ARCHIVES" -maxdepth 1 -type f -size +0 -iname "$glob" -not -iname '*.part' -not -iname '*.crdownload' -printf '%T@ %p\n' 2>/dev/null \
         | sort -rn | head -1 | cut -d' ' -f2-
 }
 
@@ -102,7 +102,10 @@ extract_fomod() {
     mkdir -p "$target"
     for prefix in "$@"; do
         7z x "$archive" -o"$tmpdir" "${prefix}/*" -r -y > /dev/null 2>&1 || true
-        if [[ -d "$tmpdir/$prefix" ]]; then
+        if [[ -d "$tmpdir/$prefix/Data Files" ]]; then
+            # module wraps its data (TR 26.08: "00 Core/Data Files/...")
+            cp -a "$tmpdir/$prefix/Data Files"/. "$target"/
+        elif [[ -d "$tmpdir/$prefix" ]]; then
             cp -a "$tmpdir/$prefix"/. "$target"/
         else
             echo "  WARNING: '$prefix' not found in $(basename "$archive")"
@@ -159,6 +162,29 @@ is_data_root() {
 #   3. single wrapper folder                  -> descend and re-check
 #   4. game data at archive root              -> copy flat
 # Prints what it found so the result can be sanity-checked against the readme.
+# extract_all GLOB LABEL TARGET [module globs...]
+# Like have_archive+extract_auto, but for mods whose Nexus page is SEVERAL
+# downloads (meshes + textures, main + Bloodmoon, one file per module...).
+# Every matching archive is extracted into TARGET (sorted by name). Missing
+# is a NOTE (all callers are optional additions). Returns 1 if nothing found.
+extract_all() {
+    local glob="$1" label="$2" target="$3"; shift 3
+    local -a found
+    mapfile -t found < <(find "$ARCHIVES" -maxdepth 1 -type f -size +0 -iname "$glob" -not -iname '*.part' -not -iname '*.crdownload' | sort)
+    if (( ${#found[@]} == 0 )); then
+        echo "  (not downloaded — skipping; pattern: $glob)"
+        NOTES+=("$label: not downloaded (looked for '$glob')")
+        return 1
+    fi
+    local a
+    for a in "${found[@]}"; do
+        echo "  Archive: $(basename "$a")"
+        extract_auto "$a" "$target" "$@"
+    done
+    verify "$target" "$label"
+    echo "  Done."
+}
+
 extract_auto() {
     local archive="$1" target="$2"
     shift 2
@@ -233,45 +259,54 @@ echo "=========================================="
 # ===========================================================================
 
 echo "[1/21] 001 Patch for Purists (flat structure)..."
-if have_archive "Patch for Purists-45096-*" "001 Patch for Purists"; then
+if have_archive "Patch for Purists*[- ]45096[- ]*" "001 Patch for Purists"; then
     7z x "$ARCHIVE" -o"$MODS/001_patch_for_purists" -r -y > /dev/null 2>&1 || true
     verify "$MODS/001_patch_for_purists" "001 Patch for Purists"
     echo "  Done."
 fi
 
-echo "[2/21] 002 UMOPP Merged + Compatibility ESP..."
-if have_archive "Unofficial Morrowind Official Plugins Patched-43931-*" "002 UMOPP"; then
-    extract_fomod "$ARCHIVE" "$MODS/002_umopp" \
-        "08 UMOPP Merged" "09 UMOPP Compatibility Merged"
-    # The 09 Compat ESP overwrites the 08 ESP (same filename), giving us PfP-compatible version
+echo "[2/21] 002 UMOPP 3.3.0 — merged compatibility (No Firemoth) + Siege at Firemoth..."
+# UMOPP readme: "DO NOT USE BOTH THE MERGED AND INDIVIDUAL VERSIONS TOGETHER" and for
+# OpenMW/manual installs "ONLY INSTALL THE FOLDER MARKED 000 MANUAL INSTALL ONLY".
+# That folder = assets + Merged Compatibility No-Firemoth ESP (the TR-friendly one)
+# + Siege at Firemoth.esp + UMOPP_BetterArmorPatch.esp (Better Morrowind Armor only — not enabled).
+# content= "Unofficial Morrowind Official Plugins Patched.ESP" + "Siege at Firemoth.esp"
+if have_archive "Unofficial Morrowind Official Plugins Patched*[- ]43931[- ]*" "002 UMOPP"; then
+    rm -rf "$MODS/002_umopp"   # 3.2.1 layout left individual ESPs behind; start clean
+    extract_fomod "$ARCHIVE" "$MODS/002_umopp" "000 MANUAL INSTALL ONLY USE THIS FOLDER 000"
     verify "$MODS/002_umopp" "002 UMOPP"
     echo "  Done."
 fi
 
 echo "[3/21] 003 Expansion Delay (flat structure)..."
-if have_archive "Expansion Delay-47588-*" "003 Expansion Delay"; then
+if have_archive "Expansion Delay*[- ]47588[- ]*" "003 Expansion Delay"; then
     7z x "$ARCHIVE" -o"$MODS/003_expansion_delay" -r -y > /dev/null 2>&1 || true
     verify "$MODS/003_expansion_delay" "003 Expansion Delay"
     echo "  Done."
 fi
 
 echo "[4/21] 004 Morrowind Optimization Patch..."
-if have_archive "Morrowind Optimization Patch-45384-*" "004 MOP"; then
+if have_archive "Morrowind Optimization Patch*[- ]45384[- ]*" "004 MOP"; then
     extract_fomod "$ARCHIVE" "$MODS/004_morrowind_optimization_patch" "00 Core"
     verify "$MODS/004_morrowind_optimization_patch" "004 MOP"
     echo "  Done."
 fi
 
-echo "[5/21] 005 Tamriel Data (HD) — ~2.2GB, please wait (newest download wins: 26.08 required by TR 26.08)..."
-if have_archive "Tamriel Data (HD)-44537-*" "005 Tamriel Data"; then
-    extract_fomod "$ARCHIVE" "$MODS/005_tamriel_data" "00 Data Files"
+echo "[5/21] 005 Tamriel_Data HD (00 Data Files + 01 Normal Maps; Nexus 59927, old page 44537)..."
+TD_ARCHIVE=""
+for g in "*[- ]59927[- ]*" "Tamriel Data (HD)*[- ]44537[- ]*"; do TD_ARCHIVE=$(find_archive "$g"); [[ -n "$TD_ARCHIVE" ]] && break; done
+if [[ -z "$TD_ARCHIVE" ]]; then
+    echo "  MISSING ARCHIVE: Tamriel_Data HD (Nexus 59927) — skipping."; ISSUES+=("005 Tamriel Data: archive not found (looked for '*-59927-*' / 'Tamriel Data (HD)-44537-*')")
+else
+    ARCHIVE="$TD_ARCHIVE"; echo "  Archive: $(basename "$ARCHIVE")"
+    extract_fomod "$ARCHIVE" "$MODS/005_tamriel_data" "00 Data Files" "01 Data Files - Normal Maps"
     verify "$MODS/005_tamriel_data" "005 Tamriel Data"
     echo "  Done."
 fi
 
 echo "[6/21] 006 Tamriel Rebuilt (newest download wins: 26.08 'Poison Song')..."
-if have_archive "Tamriel Rebuilt*-42145-*" "006 Tamriel Rebuilt"; then
-    extract_fomod "$ARCHIVE" "$MODS/006_tamriel_rebuilt" "00 Core"
+if have_archive "Tamriel Rebuilt*[- ]42145[- ]*" "006 Tamriel Rebuilt"; then
+    extract_fomod "$ARCHIVE" "$MODS/006_tamriel_rebuilt" "00 Core" "01 Faction Integration"   # MOMW TO/EV: both; content= TR_Factions.esp
     verify "$MODS/006_tamriel_rebuilt" "006 Tamriel Rebuilt"
     echo "  Done."
 fi
@@ -281,7 +316,7 @@ fi
 # ===========================================================================
 
 echo "[7/21] 101 Graphic Herbalism..."
-if have_archive "Graphic Herbalism MWSE - OpenMW-46599-*" "101 Graphic Herbalism"; then
+if have_archive "Graphic Herbalism MWSE - OpenMW*[- ]46599[- ]*" "101 Graphic Herbalism"; then
     extract_fomod "$ARCHIVE" "$MODS/101_graphic_herbalism" "00 Core + Vanilla Meshes"
     verify "$MODS/101_graphic_herbalism" "101 Graphic Herbalism"
     echo "  Done."
@@ -295,28 +330,37 @@ if [[ -f "$ARCHIVES/harvest-lights.zip" && ! -f "$MODS/102_harvest_lights/versio
 fi
 
 echo "[9/21] 103 Weapon Sheathing..."
-if have_archive "WeaponSheathing*-46069-*" "103 Weapon Sheathing"; then
+if have_archive "WeaponSheathing**[- ]46069[- ]*" "103 Weapon Sheathing"; then
     extract_datafiles "$ARCHIVE" "$MODS/103_weapon_sheathing"
     verify "$MODS/103_weapon_sheathing" "103 Weapon Sheathing"
     echo "  Done."
 fi
 
 echo "[10/21] 104 Project Atlas..."
-if have_archive "Project Atlas-45399-*" "104 Project Atlas"; then
-    extract_fomod "$ARCHIVE" "$MODS/104_project_atlas" "00 Core"
+if have_archive "Project Atlas*[- ]45399[- ]*" "104 Project Atlas"; then
+    extract_fomod "$ARCHIVE" "$MODS/104_project_atlas" "00 Core" "01 Textures - MET" "02 Urns - Smoothed" "03 Redware - Smoothed" "06 Glow in the Dahrk Patch" "07 Graphic Herbalism Patch" "08 ILFAS Patch"   # MOMW Starter Pack (no BCOM) set; ILFAS = Improved Lights (415)
     verify "$MODS/104_project_atlas" "104 Project Atlas"
     echo "  Done."
 fi
 
 echo "[11/21] 105 Morrowind Enhanced Textures — ~2.4GB, please wait..."
-if have_archive "Morrowind Enhanced Textures*-46221-*" "105 MET"; then
+if have_archive "Morrowind Enhanced Textures**[- ]46221[- ]*" "105 MET"; then
     extract_named "$ARCHIVE" "$MODS/105_morrowind_enhanced_textures" "MET 6-1 main"
     verify "$MODS/105_morrowind_enhanced_textures" "105 MET"
+    # MOMW: also the "Interface and main menu" file (into the MET root) and the
+    # "MET 6 Atlas textures" file (into an atlas/ sub-folder = its own data= line).
+    if have_archive "*Interface**[- ]46221[- ]*" "105b MET Interface and main menu" optional; then
+        extract_auto "$ARCHIVE" "$MODS/105_morrowind_enhanced_textures"
+    fi
+    if have_archive "*Atlas**[- ]46221[- ]*" "105c MET 6 Atlas textures" optional; then
+        extract_auto "$ARCHIVE" "$MODS/105_morrowind_enhanced_textures/atlas"
+        echo "  atlas/ needs its own data= line AFTER the MET root and AFTER 104_project_atlas."
+    fi
     echo "  Done."
 fi
 
 echo "[12/21] 106 Familiar Faces..."
-if have_archive "Familiar Faces-50093-*" "106 Familiar Faces"; then
+if have_archive "Familiar Faces*[- ]50093[- ]*" "106 Familiar Faces"; then
     tmpdir=$(mktemp -d)
     7z x "$ARCHIVE" -o"$tmpdir" -r -y > /dev/null 2>&1 || true
     # Copy main Meshes/ folder (at root), skip optional subfolder
@@ -334,7 +378,7 @@ fi
 # ===========================================================================
 
 echo "[13/21] 201 Containers Animated..."
-if have_archive "OpenMW Containers Animated-46232-*" "201 Containers Animated"; then
+if have_archive "OpenMW Containers Animated*[- ]46232[- ]*" "201 Containers Animated"; then
     extract_named "$ARCHIVE" "$MODS/201_containers_animated" "Containers Animated"
     verify "$MODS/201_containers_animated" "201 Containers Animated"
     echo "  Done."
@@ -342,7 +386,10 @@ fi
 
 echo "[14/21] 202 Glow in the Dahrk — v2.11.2 ONLY (OpenMW does not support 3.x light rays)..."
 if have_archive "Glow in the Dahrk-45886-2-11-2-*" "202 Glow in the Dahrk 2.11.2"; then
-    extract_auto "$ARCHIVE" "$MODS/202_glow_in_the_dahrk"
+    # MOMW set, in 2.11.2's numbering: core, hi-res windows, Telvanni dormers, Raven Rock.
+    # Skipped: "Interior Sunrays" variants (MWSE), 03 Nord Glass, 06 Dark Molag Mar, 07 Windoors.
+    # content= GITD_Telvanni_Dormers.ESP + GITD_WL_RR_Interiors.esp
+    extract_auto "$ARCHIVE" "$MODS/202_glow_in_the_dahrk" "01 Hi Res*" "04 Telvanni Dormers*" "05 Raven Rock Glass Windows"
     verify "$MODS/202_glow_in_the_dahrk" "202 Glow in the Dahrk"
     echo "  Done."
 else
@@ -353,7 +400,7 @@ else
 fi
 
 echo "[15/21] 203 Nords Shut Your Windows (Core + Purist option)..."
-if have_archive "Nords shut your windows-50087-*" "203 Nords Shut Your Windows"; then
+if have_archive "Nords shut your windows*[- ]50087[- ]*" "203 Nords Shut Your Windows"; then
     tmpdir=$(mktemp -d)
     extract_any "$ARCHIVE" "$tmpdir"
     # Core has textures + base meshes, Purist has simpler replacement meshes
@@ -370,21 +417,21 @@ if have_archive "Nords shut your windows-50087-*" "203 Nords Shut Your Windows";
 fi
 
 echo "[16/21] 204 TrueType Fonts..."
-if have_archive "Fonts-46854-*" "204 TrueType Fonts"; then
+if have_archive "Fonts*[- ]46854[- ]*" "204 TrueType Fonts"; then
     extract_named "$ARCHIVE" "$MODS/204_truetype_fonts" "Fonts"
     verify "$MODS/204_truetype_fonts" "204 TrueType Fonts"
     echo "  Done."
 fi
 
 echo "[17/21] 205 Cantons on the Global Map..."
-if have_archive "Cantons_on_the_Global_Map*-50534-*" "205 Cantons"; then
+if have_archive "Cantons_on_the_Global_Map**[- ]50534[- ]*" "205 Cantons"; then
     extract_datafiles "$ARCHIVE" "$MODS/205_cantons_global_map"
     verify "$MODS/205_cantons_global_map" "205 Cantons"
     echo "  Done."
 fi
 
 echo "[18/21] 206 Distant Seafloor..."
-if have_archive "Distant_Seafloor*-50796-*" "206 Distant Seafloor"; then
+if have_archive "Distant_Seafloor**[- ]50796[- ]*" "206 Distant Seafloor"; then
     extract_fomod "$ARCHIVE" "$MODS/206_distant_seafloor" "00 Core"
     verify "$MODS/206_distant_seafloor" "206 Distant Seafloor"
     echo "  Done."
@@ -402,7 +449,7 @@ fi
 # ===========================================================================
 
 echo "[20/21] 301 Repopulated Morrowind (Core + main + Bloodmoon + TR)..."
-if have_archive "Repopulated Morrowind-51174-*" "301 Repopulated Morrowind"; then
+if have_archive "Repopulated Morrowind*[- ]51174[- ]*" "301 Repopulated Morrowind"; then
     extract_fomod "$ARCHIVE" "$MODS/301_repopulated_morrowind" \
         "00 Core" "01 Repopulated Morrowind" "03 Bloodmoon" "05 Tamriel Rebuilt"
     verify "$MODS/301_repopulated_morrowind" "301 Repopulated Morrowind"
@@ -410,22 +457,17 @@ if have_archive "Repopulated Morrowind-51174-*" "301 Repopulated Morrowind"; the
     echo "  Done."
 fi
 
-echo "[21/21] 302 Repopulated Creatures..."
-if have_archive "Repopulated Creatures-55628-*" "302 Repopulated Creatures"; then
-    tmpdir=$(mktemp -d)
-    7z x "$ARCHIVE" -o"$tmpdir" -r -y > /dev/null 2>&1 || true
-    mkdir -p "$MODS/302_repopulated_creatures"
-    if [[ -d "$tmpdir/Repopulated Creatures/Data Files" ]]; then
-        cp -a "$tmpdir/Repopulated Creatures/Data Files"/. "$MODS/302_repopulated_creatures"/
-    fi
-    rm -rf "$tmpdir"
+echo "[21/21] 302 Repopulated Creatures (1.2: 00 Core + 02 Vvardenfell and Mainland Dialogue Edits)..."
+if have_archive "Repopulated Creatures*[- ]55628[- ]*" "302 Repopulated Creatures"; then
+    # 1.1 shipped a "Data Files" wrapper; 1.2 is FOMOD-style. extract_auto handles both.
+    # content= RepopulatedCreatures.ESP + RepopulatedCreatures_DialogueEdits.ESP (TR-aware variant)
+    extract_auto "$ARCHIVE" "$MODS/302_repopulated_creatures" "02 Vvardenfell and Mainland*"
     verify "$MODS/302_repopulated_creatures" "302 Repopulated Creatures"
     echo "  Done."
 fi
 
-echo ""
 echo "[BONUS] OAAB_Data..."
-if have_archive "OAAB_Data-49042-*" "OAAB_Data"; then
+if have_archive "OAAB_Data*[- ]49042[- ]*" "OAAB_Data"; then
     extract_fomod "$ARCHIVE" "$MODS/OAAB_Data" "00 Core"
     verify "$MODS/OAAB_Data" "OAAB_Data"
     echo "  Done."
@@ -461,178 +503,245 @@ if have_archive "momw-post-processing-pack*.zip" "401 MOMW Post Processing Pack"
     echo "  Done."
 fi
 
-echo "[ADD] 402 Lush Synthesis (groundcover — register ESPs as groundcover= lines, NOT content=)..."
-if have_archive "Lush Synthesis*-52931-*" "402 Lush Synthesis" optional; then
-    # TR grass module unblocked by MOMW 2026-09-04 — include it
-    extract_auto "$ARCHIVE" "$MODS/402_lush_synthesis" "*Tamriel Rebuilt*" "*TR*"
-    verify "$MODS/402_lush_synthesis" "402 Lush Synthesis"
-    echo "  Done."
-fi
+echo "[ADD] 402 Lush Synthesis (groundcover= lines, NOT content=)..."
+# Archive (measured 2026-09-09): meshes/ textures/ at root + folders LUSH_VANILLA
+# (land plugins lush3_ac/ai/al/bc/gl/wg), LUSH_UNDERWATER (RI=rivers, SE=seas,
+# variants BM/TOTSP/CYR/TR/WoM), LUSH_SO (Solstheim), LUSH_BCOM, LUSH_TR (22.11-era,
+# superseded by 418 Fantasia), textures_halfsize (low-VRAM alt), modmaker_tools.
+# Extracted flat; each used folder is its own data= line (root, LUSH_VANILLA,
+# LUSH_UNDERWATER, LUSH_SO). groundcover= see runbook A5.
+extract_all "*[- ]52931[- ]*" "402 Lush Synthesis" "$MODS/402_lush_synthesis" || true
 
-echo "[ADD] 403 Remiros' Groundcover (Ashlands / Solstheim modules — groundcover= lines)..."
-if have_archive "Remiros*Groundcover*-46733-*" "403 Remiros Groundcover" optional; then
-    extract_auto "$ARCHIVE" "$MODS/403_remiros_groundcover"
+echo "[ADD] 418 Fantasia Grass Mod - Lush Synthesis TR Update (TR 26.08 grass)..."
+# MOMW data path: "Lush Synthesis - TR/Data files"; groundcover= lush3_TR_merged.esp
+# Nexus 60006 has two files: "Lush Synthesis TR" (ours) and "Fantasia Grass Mod TR" (for the
+# Fantasia grass family, NOT used).
+extract_all "Lush Synthesis TR*60006*" "418 Fantasia Lush Synthesis TR Update" "$MODS/418_lush_synthesis_tr" || true
+
+echo "[ADD] 403 Remiros' Groundcover (groundcover= Rem_AL.esp only; Lush covers the rest)..."
+# MOMW: "00 Core OpenMW" + "01b Thicker Grass OpenMW". 03 TR Plugins not used (Fantasia covers TR).
+# Archive ships MGE XE and OpenMW variants of every module — exact names only.
+if ARCHIVE=$(find_archive "*[- ]46733[- ]*") && [[ -n "$ARCHIVE" ]]; then
+    echo "  Archive: $(basename "$ARCHIVE")"
+    extract_fomod "$ARCHIVE" "$MODS/403_remiros_groundcover" "00 Core OpenMW" "01b Thicker Grass OpenMW"
     verify "$MODS/403_remiros_groundcover" "403 Remiros Groundcover"
     echo "  Done."
+else
+    echo "  (not downloaded — skipping; pattern: *[- ]46733[- ]*)"; NOTES+=("403 Remiros Groundcover: not downloaded (looked for '*[- ]46733[- ]*')")
 fi
 
 echo "[ADD] 404 Remiros Groundcover Textures Improvement..."
-if have_archive "*Groundcover Textures Improvement*-54261-*" "404 Remiros Groundcover Textures" optional; then
-    extract_auto "$ARCHIVE" "$MODS/404_remiros_groundcover_textures"
-    verify "$MODS/404_remiros_groundcover_textures" "404 Remiros Groundcover Textures"
-    echo "  Done."
-fi
+extract_all "*[- ]54261[- ]*" "404 Remiros Groundcover Textures" "$MODS/404_remiros_groundcover_textures" || true
 
-echo "[ADD] 405 Skies .IV (+ OpenMW fixups: raindrop files removed automatically)..."
-if have_archive "Skies*-43311-*" "405 Skies IV" optional; then
-    extract_auto "$ARCHIVE" "$MODS/405_skies_iv"
+echo "[ADD] 405 Skies .IV (\"Skies - .IV\" + Particles merged; raindrop files removed)..."
+# MOMW: use "Skies - .IV" + "Particles", skip "Skies - Vanilla". Folders carry no
+# 00/01 prefixes so extract_auto can't pick them — merge the two wanted ones here.
+mapfile -t SKIES_ARCHIVES < <(find "$ARCHIVES" -maxdepth 1 -type f -size +0 -iname "*[- ]43311[- ]*" -not -iname '*.part' | sort)
+if (( ${#SKIES_ARCHIVES[@]} == 0 )); then
+    echo "  (not downloaded — skipping; pattern: *-43311-*)"; NOTES+=("405 Skies IV: not downloaded (looked for '*-43311-*')")
+else
+    T="$MODS/405_skies_iv"; mkdir -p "$T"
+    for ARCHIVE in "${SKIES_ARCHIVES[@]}"; do
+        echo "  Archive: $(basename "$ARCHIVE")"
+        tmpdir=$(mktemp -d); extract_any "$ARCHIVE" "$tmpdir"
+        got=0
+        while IFS= read -r -d '' d; do
+            b=$(basename "$d")
+            case "$b" in
+                "Skies - .IV"|Particles) echo "    + $b"; cp -a "$d"/. "$T"/; got=1 ;;
+                "Skies - Vanilla") echo "    - $b (skipped: alternative look)" ;;
+            esac
+        done < <(find "$tmpdir" -mindepth 1 -maxdepth 3 -type d \( -name "Skies - .IV" -o -name "Particles" -o -name "Skies - Vanilla" \) -print0 | sort -z)
+        if (( ! got )); then echo "  WARNING: expected 'Skies - .IV' / 'Particles' folders not found — extracted as-is."; cp -a "$tmpdir"/. "$T"/; ISSUES+=("405 Skies IV: unexpected layout, sort manually"); fi
+        rm -rf "$tmpdir"
+    done
     # MOMW usage notes: these two files break on OpenMW
-    find "$MODS/405_skies_iv" -ipath '*particles/meshes/raindrop.nif' -delete 2>/dev/null || true
-    find "$MODS/405_skies_iv" -ipath '*particles/textures/tx_raindrop_01.dds' -delete 2>/dev/null || true
-    echo "  Removed Particles raindrop.nif / tx_raindrop_01.dds (OpenMW fix)."
-    echo "  Add config/openmw-fallbacks-skies-iv.cfg lines to openmw.cfg."
-    verify "$MODS/405_skies_iv" "405 Skies IV"
+    find "$T" -iname 'raindrop.nif' -print -delete | sed 's/^/    removed: /'
+    find "$T" -iname 'tx_raindrop_01.dds' -print -delete | sed 's/^/    removed: /'
+    find "$T" -maxdepth 1 -type f -iname 'merge these into*' -delete   # empty marker files from the zip
+    verify "$T" "405 Skies IV"
+    NOTES+=("405: append config/openmw-fallbacks-skies-iv.cfg (10 cloud-speed lines) to openmw.cfg")
     echo "  Done."
 fi
 
-echo "[ADD] 406 New Starfields..."
-if have_archive "New Starfields*-43246-*" "406 New Starfields" optional; then
-    extract_auto "$ARCHIVE" "$MODS/406_new_starfields"
-    verify "$MODS/406_new_starfields" "406 New Starfields"
+echo "[ADD] 406 New Starfields (00 Core + MOMW's suggested option 7)..."
+# MOMW: "00 Core" always; optionally exactly ONE option folder — their pick is "01 Option 7 (100% Opacity)".
+extract_all "*[- ]43246[- ]*" "406 New Starfields" "$MODS/406_new_starfields" "01 Option 7 (100% Opacity)" || true
+
+echo "[ADD] 407 Normal Maps for Morrowind (modules per MOMW: 01a/03/04/05/07/08/09b)..."
+# Nexus 45336 ships as separate numbered downloads (and/or one archive with
+# numbered folders). Take EVERY matching archive, keep only the modules MOMW
+# recommends for a MET/Atlas stack, then drop the four known-bad _nh.dds files.
+NMFM_WANT=("01a*" "03 *" "04 *" "05 *" "07 *" "08 *" "09b*")
+mapfile -t NMFM_ARCHIVES < <(find "$ARCHIVES" -maxdepth 1 -type f -size +0 -iname "*[- ]45336[- ]*" -not -iname '*.part' | sort)
+if (( ${#NMFM_ARCHIVES[@]} == 0 )); then
+    echo "  (not downloaded — skipping; pattern: *[- ]45336[- ]*)"
+    NOTES+=("407 Normal Maps for Morrowind: not downloaded (looked for '*[- ]45336[- ]*')")
+else
+    T="$MODS/407_normal_maps_for_morrowind"; mkdir -p "$T"
+    for ARCHIVE in "${NMFM_ARCHIVES[@]}"; do
+        echo "  Archive: $(basename "$ARCHIVE")"
+        tmpdir=$(mktemp -d); extract_any "$ARCHIVE" "$tmpdir"; root="$tmpdir"
+        while :; do
+            mapfile -t entries < <(find "$root" -mindepth 1 -maxdepth 1 -not -name '__MACOSX' -not -name 'fomod')
+            if (( ${#entries[@]} == 1 )) && [[ -d "${entries[0]}" ]] && ! is_data_root "$root" \
+               && [[ ! "$(basename "${entries[0]}")" =~ ^[0-9][0-9][a-z]?\  ]]; then root="${entries[0]}"; else break; fi
+        done
+        if compgen -G "$root/[0-9][0-9]*" > /dev/null; then
+            echo "  Layout: numbered module folders"
+            skipped=()
+            for d in "$root"/[0-9][0-9]*/; do
+                d=${d%/}; b=$(basename "$d"); want=0
+                for g in "${NMFM_WANT[@]}"; do [[ "$b" == $g ]] && want=1; done
+                if (( want )); then echo "    + $b"; cp -a "$d"/. "$T"/; else skipped+=("$b"); fi
+            done
+            (( ${#skipped[@]} )) && printf '    - skipped (not in MOMW list): %s\n' "${skipped[@]}"
+        elif is_data_root "$root"; then
+            echo "  Layout: flat (single module download)"; cp -a "$root"/. "$T"/
+        else
+            echo "  WARNING: unrecognised layout — extracted as-is."; cp -a "$root"/. "$T"/
+            ISSUES+=("407 Normal Maps for Morrowind: unrecognised layout in $(basename "$ARCHIVE")")
+        fi
+        rm -rf "$tmpdir"
+    done
+    # MOMW usage notes: these four normal maps are bad, delete them
+    for bad in Tx_emperor_parasol_01_nh.dds Tx_emperor_parasol_02_nh.dds Tx_emperor_parasol_03_nh.dds tx_ma_lava05a_nh.dds; do
+        find "$T" -iname "$bad" -print -delete | sed 's/^/    removed known-bad: /'
+    done
+    verify "$T" "407 Normal Maps for Morrowind"
+    NOTES+=("407: needs settings.cfg [Shaders] auto use object/terrain normal+specular maps = true (in config/settings-tuning.cfg)")
     echo "  Done."
 fi
 
-echo "[ADD] 407 Normal Maps for Morrowind..."
-if have_archive "Normal Maps for Morrowind*-45336-*" "407 Normal Maps for Morrowind" optional; then
-    extract_auto "$ARCHIVE" "$MODS/407_normal_maps_for_morrowind"
-    verify "$MODS/407_normal_maps_for_morrowind" "407 Normal Maps for Morrowind"
-    echo "  Done."
-fi
-
-echo "[ADD] 408 Normal Maps for Everything (modules matching OUR texture stack only)..."
-if have_archive "Normal Maps for Everything*-52567-*" "408 Normal Maps for Everything" optional; then
-    tmpdir=$(mktemp -d)
-    extract_any "$ARCHIVE" "$tmpdir"
-    mkdir -p "$MODS/408_normal_maps_for_everything"
-    # Unwrap a single top-level wrapper folder if present
-    nmroot="$tmpdir"
-    mapfile -t _top < <(find "$nmroot" -mindepth 1 -maxdepth 1 -not -name '__MACOSX')
-    if (( ${#_top[@]} == 1 )) && [[ -d "${_top[0]}" ]]; then nmroot="${_top[0]}"; fi
-    # Ship-with-modules pack: copy only modules for packs we actually run.
-    # Everything else is listed so it can be reviewed against MOMW usage notes.
-    copied=0
-    while IFS= read -r -d '' d; do
-        name=$(basename "$d")
-        case "${name,,}" in
-            *enhanced\ textures*|*met*|*atlas*|*tamriel_data*|*tamriel\ data*|*oaab*|*core*|*vanilla*)
-                echo "    + $name"; cp -a "$d"/. "$MODS/408_normal_maps_for_everything"/; copied=$((copied+1)) ;;
-            *bcom*|*beautiful*|*hall\ of\ justice*|fomod)
-                echo "    - $name (skipped: not in our stack / pulled pending TR 26.08)" ;;
-            *)
-                echo "    ? $name (skipped: unknown module — review)" ;;
-        esac
-    done < <(find "$nmroot" -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
-    rm -rf "$tmpdir"
-    if (( copied == 0 )); then
-        ISSUES+=("408 Normal Maps for Everything: no modules matched our stack — extract manually")
+echo "[ADD] 408 Normal Maps for Everything (modules for OUR stack only)..."
+# Nexus 52567 is ~48 separate downloads (one per texture pack). MOMW data paths
+# name each module; we take only the ones covering packs we actually run.
+# Two modules carry numbered sub-folders: take Vanilla 01+02, Atlas 03 (MET) only.
+NMFE_WANT=(
+    "Vanilla Textures Normal Mapped*"
+    "01 Vanilla Textures Normal Mapped*"
+    "02 Expansion Resource Conflicts*"
+    "Atlas Textures*Normal Mapped*"
+    "03 Morrowind Enhanced Textures Atlas*"
+    "Morrowind Enhanced Textures Normal Mapped*"
+    "OAAB Data*Normal Mapped*"
+    "TR_PC_SHOTN*"
+    "Tamriel*Data*Normal Mapped*"
+)
+NMFE_SKIP_REASON="not in our stack (see MOMW data paths); Hall of Justice pulled pending TR 26.08"
+nmfe_want() { local g; for g in "${NMFE_WANT[@]}"; do [[ "$1" == $g ]] && return 0; done; return 1; }
+# nmfe_take DIR TARGET — copy a module dir; recurse into wanted numbered sub-folders
+nmfe_take() {
+    local d="$1" T="$2" sub b
+    if compgen -G "$d/[0-9][0-9] *" > /dev/null; then
+        for sub in "$d"/[0-9][0-9]\ */; do
+            sub=${sub%/}; b=$(basename "$sub")
+            if nmfe_want "$b"; then echo "      + $b"; cp -a "$sub"/. "$T"/; else echo "      - $b (skipped)"; fi
+        done
+    else
+        cp -a "$d"/. "$T"/
     fi
-    verify "$MODS/408_normal_maps_for_everything" "408 Normal Maps for Everything"
-    echo "  REMEMBER: delete the known-bad *_n.dds files per MOMW usage notes (see runbook)."
+}
+mapfile -t NMFE_ARCHIVES < <(find "$ARCHIVES" -maxdepth 1 -type f -size +0 -iname "*[- ]52567[- ]*" -not -iname '*.part' | sort)
+if (( ${#NMFE_ARCHIVES[@]} == 0 )); then
+    echo "  (not downloaded — skipping; pattern: *[- ]52567[- ]*)"
+    NOTES+=("408 Normal Maps for Everything: not downloaded (looked for '*[- ]52567[- ]*')")
+else
+    T="$MODS/408_normal_maps_for_everything"; mkdir -p "$T"; copied=0
+    for ARCHIVE in "${NMFE_ARCHIVES[@]}"; do
+        echo "  Archive: $(basename "$ARCHIVE")"
+        tmpdir=$(mktemp -d); extract_any "$ARCHIVE" "$tmpdir"; root="$tmpdir"
+        # unwrap non-module wrapper folders (stop at a module name we know, or a data root)
+        while :; do
+            mapfile -t entries < <(find "$root" -mindepth 1 -maxdepth 1 -not -name '__MACOSX' -not -name 'fomod')
+            if (( ${#entries[@]} == 1 )) && [[ -d "${entries[0]}" ]] && ! is_data_root "$root" \
+               && ! nmfe_want "$(basename "${entries[0]}")"; then root="${entries[0]}"; else break; fi
+        done
+        if is_data_root "$root"; then
+            # single-module download with data at root: trust the archive name
+            b=$(basename "$ARCHIVE"); b=${b%%-52567-*}; b=${b#Normal Maps for Everything}; b=${b# - }; b=${b# }
+            if [[ -z "$b" ]] || nmfe_want "$b"; then echo "    + (flat) ${b:-unnamed}"; cp -a "$root"/. "$T"/; copied=$((copied+1))
+            else echo "    - (flat) $b (skipped: $NMFE_SKIP_REASON)"; fi
+        else
+            while IFS= read -r -d '' d; do
+                b=$(basename "$d")
+                if nmfe_want "$b"; then echo "    + $b"; nmfe_take "$d" "$T"; copied=$((copied+1))
+                else echo "    - $b (skipped: $NMFE_SKIP_REASON)"; fi
+            done < <(find "$root" -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+        fi
+        rm -rf "$tmpdir"
+    done
+    (( copied == 0 )) && ISSUES+=("408 Normal Maps for Everything: no modules matched our stack — check archive names")
+    verify "$T" "408 Normal Maps for Everything"
+    NOTES+=("408: needs the same four settings.cfg [Shaders] 'auto use ... maps = true' lines as 407")
     echo "  Done."
 fi
 
 echo "[ADD] 409 GitD Normal Specular PBR Maps..."
-if have_archive "*Glow in the Dahrk*Normal*-58029-*" "409 GitD PBR Maps" optional; then
+if have_archive "*Normal and Specular*[- ]58029[- ]*" "409 GitD Normal and Specular Maps" optional; then
     extract_auto "$ARCHIVE" "$MODS/409_gitd_normal_pbr"
     verify "$MODS/409_gitd_normal_pbr" "409 GitD PBR Maps"
     echo "  Done."
 fi
 
 echo "[ADD] 410 Facelift for Tamriel Data..."
-if have_archive "Facelift for Tamriel Data*-53935-*" "410 Facelift for Tamriel Data" optional; then
-    extract_auto "$ARCHIVE" "$MODS/410_facelift_tamriel_data"
-    verify "$MODS/410_facelift_tamriel_data" "410 Facelift for Tamriel Data"
-    echo "  Done."
-fi
+# Two main files on Nexus (Facelift_TR_Meshes + Facelift_TR_Textures) -> one folder.
+extract_all "*[- ]53935[- ]*" "410 Facelift for Tamriel Data" "$MODS/410_facelift_tamriel_data" || true
 
 echo "[ADD] 411 Morrowind Interiors Project..."
-if have_archive "Morrowind Interiors Project*-52237-*" "411 Morrowind Interiors Project" optional; then
-    extract_auto "$ARCHIVE" "$MODS/411_morrowind_interiors_project"
-    verify "$MODS/411_morrowind_interiors_project" "411 Morrowind Interiors Project"
-    echo "  Done."
-fi
+# Main file + optional Bloodmoon file; both ship a "Data Files" wrapper.
+# content= MorrowindInteriorsProject.ESP, _Bloodmoon.ESP, _TR.ESP (after TR).
+# "Anthology Solstheim" file is for a mod we do not run — excluded by name.
+extract_all "Morrowind Interiors Project*[- ]52237[- ]*" "411 Morrowind Interiors Project" "$MODS/411_morrowind_interiors_project" || true
 
 echo "[ADD] 412 Better Waterfalls..."
-if have_archive "Better Waterfalls*-45424-*" "412 Better Waterfalls" optional; then
-    extract_auto "$ARCHIVE" "$MODS/412_better_waterfalls"
-    verify "$MODS/412_better_waterfalls" "412 Better Waterfalls"
-    echo "  Done."
-fi
+# FOMOD: 00 Core + "02 Tamriel Rebuilt Water" (MOMW); 01 stays out.
+extract_all "*[- ]45424[- ]*" "412 Better Waterfalls" "$MODS/412_better_waterfalls" "*Tamriel Rebuilt*" || true
 
-echo "[ADD] 413 Waterfalls Tweaks..."
-if have_archive "Waterfalls Tweaks*-46271-*" "413 Waterfalls Tweaks" optional; then
-    extract_auto "$ARCHIVE" "$MODS/413_waterfalls_tweaks"
-    verify "$MODS/413_waterfalls_tweaks" "413 Waterfalls Tweaks"
-    echo "  Done."
-fi
-
+echo "[ADD] 413 Waterfalls Tweaks — REMOVED 2026-09-09 (deletes vanilla light 'bc mushroom 64' that TR uses 892x)."
 echo "[ADD] 414 OpenMW More Dynamic Water Meshes..."
-if have_archive "*More Dynamic Water Meshes*-55392-*" "414 More Dynamic Water Meshes" optional; then
+if have_archive "*[- ]55392[- ]*" "414 More Dynamic Water Meshes" optional; then
     extract_auto "$ARCHIVE" "$MODS/414_more_dynamic_water_meshes"
     verify "$MODS/414_more_dynamic_water_meshes" "414 More Dynamic Water Meshes"
     echo "  Done."
 fi
 
 echo "[ADD] 415 Improved Lights for All Shaders (set 'clamp lighting = false')..."
-if have_archive "Improved Lights for All Shaders*-51463-*" "415 Improved Lights for All Shaders" optional; then
-    extract_auto "$ARCHIVE" "$MODS/415_improved_lights_all_shaders"
-    verify "$MODS/415_improved_lights_all_shaders" "415 Improved Lights for All Shaders"
-    echo "  Done."
-fi
+# FOMOD: 00 Core + "01 Smoke and Steam Emitters" (MOMW takes both). settings.cfg: clamp lighting = false
+extract_all "*[- ]51463[- ]*" "415 Improved Lights for All Shaders" "$MODS/415_improved_lights_all_shaders" "*Smoke*" || true
 
 echo "[ADD] 416 Kirel's Interior Weather..."
-if have_archive "Kirel*Interior Weather*-49278-*" "416 Kirel's Interior Weather" optional; then
-    extract_auto "$ARCHIVE" "$MODS/416_kirels_interior_weather"
-    verify "$MODS/416_kirels_interior_weather" "416 Kirel's Interior Weather"
-    echo "  Done."
-fi
+# Download ONLY the "(Cleaned and updated with tes3cmd)" file. content= k_weather.esp
+extract_all "*[- ]49278[- ]*" "416 Kirel's Interior Weather" "$MODS/416_kirels_interior_weather" || true
 
-echo "[ADD] 417 OAAB Saplings + OpenMW groundcover patch..."
-if have_archive "OAAB*Saplings*-50334-*" "417 OAAB Saplings" optional; then
-    extract_auto "$ARCHIVE" "$MODS/417_oaab_saplings"
-    verify "$MODS/417_oaab_saplings" "417 OAAB Saplings"
-    echo "  Done."
-fi
-if have_archive "*Saplings*Groundcover*-52351-*" "417b OAAB Saplings groundcover patch" optional; then
-    extract_auto "$ARCHIVE" "$MODS/417_oaab_saplings"
-    echo "  Done."
-fi
+echo "[ADD] 417 OAAB Saplings (00 Core + 10 Openmw Groundcover Patch)..."
+# MOMW: content= "OAAB_Saplings OpenMW Patch.ESP"; groundcover= OAAB_Saplings.esm.
+# Nexus 52351 (separate groundcover patch) is DEPRECATED — folded into folder 10. Not used.
+extract_all "*[- ]50334[- ]*" "417 OAAB Saplings" "$MODS/417_oaab_saplings" "10 *" || true
 
-echo "[ADD] 501 LDM - Context Matters..."
-if have_archive "*Context Matters*" "501 LDM Context Matters" optional; then
-    extract_auto "$ARCHIVE" "$MODS/501_ldm_context_matters"
-    verify "$MODS/501_ldm_context_matters" "501 LDM Context Matters"
-    echo "  Done."
-fi
+echo "[ADD] 501 LDM - Context Matters (Nexus 48273)..."
+# content= "LDM - Context Matters 1.7.ESP" (after PfP and TR)
+extract_all "*[- ]48273[- ]*" "501 LDM Context Matters" "$MODS/501_ldm_context_matters" || true
 
-echo "[ADD] 502 Protective Guards (OpenMW) + 503 Factions and NPCs Protections..."
-if have_archive "Protective Guards*-46992-*" "502 Protective Guards" optional; then
-    extract_auto "$ARCHIVE" "$MODS/502_protective_guards"
-    verify "$MODS/502_protective_guards" "502 Protective Guards"
-    echo "  Done."
-fi
-if have_archive "*Protections*-54858-*" "503 Protective Guards Factions add-on" optional; then
-    extract_auto "$ARCHIVE" "$MODS/503_protective_guards_factions"
-    verify "$MODS/503_protective_guards_factions" "503 Protective Guards Factions add-on"
-    echo "  Done."
-fi
+echo "[ADD] 502 Protective Guards (OpenMW) 2.0..."
+# v2.0 (2026-08-31): content= protective_guards.omwscripts (renamed from
+# protective_guards_for_omw.omwscripts); has an in-game settings menu.
+# The "Factions and NPCs Protections" add-on (54858) is a 1.x fork under the old
+# script name — running both = two guard systems. Superseded; NOT extracted.
+extract_all "*[- ]46992[- ]*" "502 Protective Guards" "$MODS/502_protective_guards" || true
 
-echo "[ADD] 504 Book Jackets Complete Collection HD..."
-if have_archive "Book Jackets*-55402-*" "504 Book Jackets HD" optional; then
-    extract_auto "$ARCHIVE" "$MODS/504_book_jackets_hd"
-    verify "$MODS/504_book_jackets_hd" "504 Book Jackets HD"
-    echo "  Done."
-fi
+echo "[ADD] 514 Arukinn's Better Books and Scrolls (MOMW order: Arukinn -> Book Jackets -> MMM)..."
+extract_all "*[- ]43100[- ]*" "514 Arukinns Better Books" "$MODS/514_arukinns_better_books" || true
+
+echo "[ADD] 504 Book Jackets Complete Collection HD (+ optional OAAB book jackets)..."
+# MOMW path: book-jackets/00 Core; content= book-jackets.esp
+extract_all "*[- ]55402[- ]*" "504 Book Jackets HD" "$MODS/504_book_jackets_hd" || true
+# Optional: "OAABBookJackets" file from MOMW's Various Mods and Patches (Nexus 56176)
+# -> content= OAAB_BookJackets.omwaddon after OAAB_Data.esm and book-jackets.esp
+extract_all "*BookJackets*[- ]56176[- ]*" "504b OAAB Book Jackets (Various Mods and Patches)" "$MODS/504_book_jackets_hd" || true
+
+echo "[ADD] 515 Melchior's Magnificent Manuscripts (00 Core + 01 Book Jackets Patch)..."
+extract_all "*[- ]45626[- ]*" "515 Melchiors Magnificent Manuscripts" "$MODS/515_melchiors_manuscripts" "01 Book Jackets Patch" || true
 
 echo "[ADD] 5xx GitLab Lua QoL mods (UI Modes, Pause Control, Friendly Autosave, ...) —"
 echo "      handled by: ./update_gitlab_mods.sh qol"

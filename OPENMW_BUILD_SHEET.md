@@ -39,7 +39,7 @@ This matches what `extract_mods.sh` actually produces under `~/mods/morrowind/`:
 │   ├── 105_morrowind_enhanced_textures/
 │   ├── 106_familiar_faces/
 │   ├── 201_containers_animated/
-│   ├── 202_glow_in_the_dahrk/       # v2.11.2 ONLY — currently pending re-download
+│   ├── 202_glow_in_the_dahrk/       # v2.11.2 ONLY — core + hi-res windows + Telvanni dormers + Raven Rock
 │   ├── 203_nords_shut_your_windows/
 │   ├── 204_truetype_fonts/
 │   ├── 205_cantons_global_map/
@@ -310,6 +310,7 @@ data="/home/YOURUSER/mods/morrowind/mods/006_tamriel_rebuilt"
 data="/home/YOURUSER/mods/morrowind/mods/101_graphic_herbalism"
 data="/home/YOURUSER/mods/morrowind/mods/104_project_atlas"
 data="/home/YOURUSER/mods/morrowind/mods/105_morrowind_enhanced_textures"
+data="/home/YOURUSER/mods/morrowind/mods/105_morrowind_enhanced_textures/atlas"   # MET 6 Atlas textures file (2026-09 top-up)
 data="/home/YOURUSER/mods/morrowind/mods/102_harvest_lights"
 data="/home/YOURUSER/mods/morrowind/mods/202_glow_in_the_dahrk"
 data="/home/YOURUSER/mods/morrowind/mods/203_nords_shut_your_windows"

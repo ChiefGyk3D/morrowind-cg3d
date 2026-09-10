@@ -110,3 +110,12 @@ For the actual upgrade + enhancement session, follow **[`GAME_NIGHT_RUNBOOK.md`]
 - [The Elder Scrolls III: Morrowind](https://elderscrolls.bethesda.net/en/morrowind) — buy the game (required)
 - [Tamriel Rebuilt](https://www.tamriel-rebuilt.org/) — the mainland project at the heart of this build
 - [Modding-OpenMW](https://modding-openmw.com/) — curated lists this build is based on
+
+## Rebuild from nothing (new machine / OS reinstall)
+
+1. Install OpenMW (Flatpak), run its wizard against the Steam/GOG Data Files once.
+2. `git clone` this repo to `~/mods/morrowind`, put a Nexus Premium API key in
+   `~/.config/nexusmods/apikey`.
+3. `./download_mods.py` → `./extract_mods.sh` → `./update_gitlab_mods.sh all`
+   → `python3 apply_config.py --refresh <Hz>` → `./check_setup.sh` → play.
+   `GAME_NIGHT_RUNBOOK.md` is the long form.

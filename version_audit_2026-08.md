@@ -115,7 +115,7 @@ Verified directly against Flathub's manifest and MOMW's list data on GitLab:
 | Item | Status |
 |------|--------|
 | OpenMW Flathub | **0.51.0** — `flatpak update` delivers it |
-| TR mainland grass (Lush Synthesis TR module) | **Unblocked** — MOMW re-added 2026-09-04; `extract_mods.sh` copies it |
+| TR mainland grass | **Unblocked** — but the thing MOMW re-listed 2026-09-04 is the separate mod **Fantasia Grass Mod – Lush Synthesis TR Update (Nexus 60006)**, not Lush's own `LUSH_TR/MERGED` (22.11-era). Corrected 2026-09-09: runbook item 5a, extractor entry 418. |
 | Tamriel Data Texture Upscale | Back on MOMW lists since 2026-08-25 (Stage 4 optional) |
 | MacKom heads | **Still off** all MOMW lists; Westly's Faces Refurbished remains the replacement |
 | Repopulated Morrowind vs TR 26.08 | **Still unverified** — MOMW's only "Repopulated" change was a Creatures folder-path tweak. Plan: upgrade TR, leave `RepopulatedMainland.ESP` out of `content=` until RM updates |
