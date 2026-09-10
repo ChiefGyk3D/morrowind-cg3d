@@ -48,6 +48,7 @@ strip_quotes() {
 mapfile -t DATA_PATHS < <(grep '^data=' "$CFG" | sed 's/^data=//')
 mapfile -t CONTENT < <(grep '^content=' "$CFG" | sed 's/^content=//')
 mapfile -t ARCHIVES < <(grep '^fallback-archive=' "$CFG" | sed 's/^fallback-archive=//')
+mapfile -t GROUNDCOVER < <(grep '^groundcover=' "$CFG" | sed 's/^groundcover=//')
 
 echo "--- data= paths (${#DATA_PATHS[@]}) ---"
 GOOD_PATHS=()
@@ -107,6 +108,34 @@ done
 echo "  $FOUND of ${#CONTENT[@]} plugins resolved."
 echo ""
 
+echo "--- groundcover= plugins (${#GROUNDCOVER[@]}) ---"
+GFOUND=0
+declare -A GSEEN=()
+for plugin in "${GROUNDCOVER[@]}"; do
+    lower=$(printf '%s' "$plugin" | tr '[:upper:]' '[:lower:]')
+    if [[ -n "${GSEEN[$lower]:-}" ]]; then err "duplicate groundcover= entry: $plugin"; continue; fi
+    GSEEN[$lower]=1
+    if [[ -n "${SEEN[$lower]:-}" ]]; then
+        err "$plugin is in BOTH content= and groundcover= — grass plugins go in groundcover= only"
+    fi
+    if grep -qxF "$lower" "$INDEX_FILE"; then GFOUND=$((GFOUND + 1)); else err "groundcover= plugin not found in any data path: $plugin"; fi
+done
+if ((${#GROUNDCOVER[@]})); then
+    if ! awk '/^\[Groundcover\]/{s=1;next} /^\[/{s=0} s && /^enabled *= *true/{f=1} END{exit !f}' "$(dirname "$CFG")/settings.cfg" 2>/dev/null; then
+        err "groundcover= lines present but settings.cfg has no [Groundcover] enabled = true — no grass will render"
+    fi
+fi
+echo "  $GFOUND of ${#GROUNDCOVER[@]} groundcover plugins resolved."
+echo ""
+
+echo "--- master order (TES3 headers) ---"
+if [[ -x "$(dirname "$0")/check_masters.py" ]]; then
+    if ! python3 "$(dirname "$0")/check_masters.py" "$CFG"; then err "master-order problems above (a plugin loads before a master it needs)"; fi
+else
+    warn "check_masters.py not found next to this script — master order not verified"
+fi
+echo ""
+
 echo "--- fallback-archive= BSAs (${#ARCHIVES[@]}) ---"
 for bsa in "${ARCHIVES[@]}"; do
     lower=$(printf '%s' "$bsa" | tr '[:upper:]' '[:lower:]')
@@ -120,14 +149,18 @@ done
 echo "  checked."
 echo ""
 
-# Build-specific sanity: mods that ship .omwscripts need their content= line
-for scripts_name in harvest-lights.omwscripts distant-fixes-lua-edition.omwscripts; do
-    if grep -qxF "$scripts_name" "$INDEX_FILE" 2>/dev/null; then
-        if ! printf '%s\n' "${CONTENT[@]}" | tr '[:upper:]' '[:lower:]' | grep -qxF "$scripts_name"; then
-            warn "$scripts_name is installed but has no content= line — the mod is inert."
-        fi
+# Build-specific sanity: every installed .omwscripts needs a content= line
+# (exception: go-home ships two variants, only one may be enabled).
+while IFS= read -r scripts_name; do
+    [[ -z "$scripts_name" ]] && continue
+    if ! printf '%s\n' "${CONTENT[@]}" | tr '[:upper:]' '[:lower:]' | grep -qxF "$scripts_name"; then
+        case "$scripts_name" in
+            go-home-locking-doors.omwscripts|*-fr.omwscripts) ;;   # go-home alternative / French variants
+            "cinematic boken dof.omwscripts") ;;                    # optional DoF script in the MOMW shader pack
+            *) warn "$scripts_name is installed but has no content= line — the mod is inert." ;;
+        esac
     fi
-done
+done < <(grep '\.omwscripts$' "$INDEX_FILE" 2>/dev/null)
 
 echo ""
 echo "--- OpenMW Flatpak + NVIDIA driver ---"

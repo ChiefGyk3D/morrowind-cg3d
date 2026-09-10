@@ -48,8 +48,8 @@ Enable OpenMW's native groundcover (`[Groundcover] enabled = true`,
 | B1 | **Lush Synthesis 3.0** | 52931 | Ascadian Isles, Bitter Coast, Grazelands, West Gash + waterways — the modern default, "99% less clipping", BCOM/vanilla compatible |
 | B2 | **Remiros' Groundcover** (Ashlands module, `Rem_AL.esp`; Solstheim module for vanilla Solstheim) | 46733 | What Lush doesn't cover |
 | B3 | **Remiros Groundcover Textures Improvement** | 54261 | Fixes jagged grass textures |
-| B4 | **OAAB Saplings** + OpenMW groundcover patch | 50334 + 52351 | We have OAAB_Data |
-| B5 | **TR mainland grass** — Lush Synthesis's own TR module | (in 52931) | ✅ **Unblocked 2026-09-04** — MOMW re-listed "Lush Synthesis TR Update". `extract_mods.sh` copies the TR module automatically. |
+| B4 | **OAAB Saplings** | 50334 | We have OAAB_Data. Take `00 Core` + `10 Openmw Groundcover Patch`; Nexus 52351 is deprecated (folded into folder 10). |
+| B5 | **TR mainland grass** — Fantasia Grass Mod – Lush Synthesis TR Update | 60006 | ✅ MOMW's TR 26.08 grass (this is what was re-listed 2026-09-04, not Lush's own `LUSH_TR` module, which is 22.11-era and stays unused). Extractor entry 418; `groundcover=lush3_TR_merged.esp`. |
 
 Purist alternative worth knowing: **Turn Normal Grass and Kelp into
 Groundcover** (52010) converts vanilla's own grass statics; **Groundcoverify**
@@ -84,12 +84,18 @@ fallback=Weather_Snow_Cloud_Speed,0.3
 
 Order matters; later wins:
 
-1. **Normal Maps for Morrowind** (45336) — vanilla-friendly base
-2. **Normal Maps for Everything** (52567) — pick the modules that match our
-   exact stack: *MET Normal Mapped*, *Atlas Textures AIO* (Project Atlas),
-   *Tamriel_Data*, *OAAB Data* (+ BCOM module later). Delete the known-bad
-   `_n.dds` files per MOMW usage notes. TR "Hall of Justice" module pulled
-   2026-08-23 pending TR 26.08 update.
+1. **Normal Maps for Morrowind** (45336) — vanilla-friendly base. Separate
+   module downloads; take *01a Shacks docks and ships (Lysol compatible)*, *03
+   Telvanni*, *04 Daedric*, *05 Redoran*, *07 Terrain*, *08 Rocks*, *09b
+   Swirlwood (Ket's)*. Extractor deletes the four known-bad `_nh.dds`.
+2. **Normal Maps for Everything** (52567) — ~48 separate downloads; take only
+   *Vanilla Textures Normal Mapped* (01 + 02), *Atlas Textures Normal Mapped*
+   (03 MET only), *Morrowind Enhanced Textures Normal Mapped*, *OAAB Data
+   Textures Normal Mapped*, *TR_PC_SHOTN Normal Mapped* (if still listed —
+   Tamriel_Data 26.08 ships its own `01 Data Files - Normal Maps`, which the
+   extractor now takes). TR "Hall of Justice" module stays out pending a TR
+   26.08 check. Both mods need the four `auto use ... maps = true` keys, now
+   in `config/settings-tuning.cfg`.
 3. **Normal Maps for Premium** (56419)
 4. **GitD Normal Specular PBR Maps** (58029) — with our GitD 2.11.2 install
 

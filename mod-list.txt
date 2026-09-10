@@ -35,7 +35,10 @@ TIER 1: MUST-INSTALL BACKBONE
   Archive: Patch for Purists-45096-5-0-6-1765845457.7z
   Notes: Pure bug fix mod. Load first after base game.
 
-[DOWNLOADED] 002 - Unofficial Morrowind Official Plugins Patched (UMOPP)
+[DOWNLOADED] 002 - Unofficial Morrowind Official Plugins Patched (UMOPP) — 3.3.0 (2026-09-09)
+  Files: main file. Extractor takes ONLY "000 MANUAL INSTALL ONLY USE THIS FOLDER 000" (readme: OpenMW).
+  content= "Unofficial Morrowind Official Plugins Patched.ESP" (merged compatibility, No Firemoth)
+           + "Siege at Firemoth.esp". NOT the individual ESPs, NOT UMOPP_BetterArmorPatch.esp.
   Nexus ID: 43931 | Version: 3.2.1
   URL: https://www.nexusmods.com/morrowind/mods/43931?tab=files
   Archive: Unofficial Morrowind Official Plugins Patched-43931-3-2-1-1709596838.7z
@@ -189,7 +192,9 @@ Download it alongside Tamriel Data if you plan to use BCOM.
   Notes: Best modern MCA replacement. Requires TR_Data.
          Has optional plugins for Tamriel Rebuilt landmass.
 
-[DOWNLOADED] 302 - Repopulated Creatures
+[DOWNLOADED] 302 - Repopulated Creatures — 1.2 (2026-08-30)
+  Files: main file. Extractor takes "00 Core" + "02 Vvardenfell and Mainland Dialogue Edits".
+  content= RepopulatedCreatures.ESP + RepopulatedCreatures_DialogueEdits.ESP
   Nexus ID: 55628 | Version: 1.1
   URL: https://www.nexusmods.com/morrowind/mods/55628?tab=files
   Archive: Repopulated Creatures-55628-1-1-1746140786.zip
@@ -286,69 +291,105 @@ Still needed for "big boy" expansion (NOT baseline):
 GAME_NIGHT_RUNBOOK.md; extract_mods.sh auto-detects these by filename)
 ================================================================================
 
-[NEED] 401 - MOMW Post Processing Pack        -> mods/401_momw_post_processing_pack/<numbered folders>
-  URL: https://modding-openmw.gitlab.io/momw-post-processing-pack/  (momw-post-processing-pack.zip)
+[HAVE] 401 - MOMW Post Processing Pack        -> mods/401_momw_post_processing_pack/<numbered folders>
+  URL: https://modding-openmw.gitlab.io/momw-post-processing-pack/  (momw-post-processing-pack.zip, sha256-verified 2026-09-09)
   Notes: SSAO HQ, godrays, bloom, HDR, DoF, volumetric clouds. Each numbered
          folder is its own data= line. 00 RecommendedConfig/shaders.yaml -> config dir.
 
-[NEED] 402 - Lush Synthesis 3.0 (groundcover)  -> mods/402_lush_synthesis
+[NEED] 402 - Lush Synthesis 3.0 (groundcover)  -> mods/402_lush_synthesis (+ LUSH_VANILLA, LUSH_UNDERWATER, LUSH_SO data= lines)
   Nexus ID: 52931 | URL: https://www.nexusmods.com/morrowind/mods/52931?tab=files
-  Notes: groundcover= lines, NOT content=. TR module included (MOMW re-listed 2026-09-04).
+  Files: main file only.
+  Notes: data= root + LUSH_VANILLA + LUSH_UNDERWATER + LUSH_SO. groundcover= lush3_ac/ai/bc/gl/wg
+         (land; Ashlands via Rem_AL), lush3_SO_BM, lush3_RI_BM + lush3_SE_BM (water).
+         LUSH_BCOM / LUSH_TR (22.11-era) / textures_halfsize NOT used; TR grass = 418.
+
+[NEED] 418 - Fantasia Grass Mod - Lush Synthesis TR Update -> mods/418_lush_synthesis_tr
+  Nexus ID: 60006 | URL: https://www.nexusmods.com/morrowind/mods/60006?tab=files
+  Files: main file. Notes: MOMW's TR 26.08 grass; groundcover= lush3_TR_merged.esp.
 
 [NEED] 403 - Remiros' Groundcover              -> mods/403_remiros_groundcover
   Nexus ID: 46733 | URL: https://www.nexusmods.com/morrowind/mods/46733?tab=files
-  Notes: Ashlands (Rem_AL.esp) + Solstheim; groundcover= lines.
+  Files: main file. Extractor takes "00 Core OpenMW" + "01b Thicker Grass OpenMW"; 03 TR Plugins unused.
+  Notes: groundcover= Rem_AL.esp ONLY (Lush covers AI/BC/GL/WG).
 
 [NEED] 404 - Remiros Groundcover Textures Improvement -> mods/404_remiros_groundcover_textures
   Nexus ID: 54261 | URL: https://www.nexusmods.com/morrowind/mods/54261?tab=files
+  Files: main file (single).
 
 [NEED] 405 - Skies .IV                          -> mods/405_skies_iv
   Nexus ID: 43311 | URL: https://www.nexusmods.com/morrowind/mods/43311?tab=files
-  Notes: extractor deletes the two raindrop files; append config/openmw-fallbacks-skies-iv.cfg.
+  Files: main file. Extractor merges "Skies - .IV" + "Particles", skips "Skies - Vanilla".
+  Notes: extractor deletes the two raindrop files; append config/openmw-fallbacks-skies-iv.cfg (10 lines).
 
 [NEED] 406 - New Starfields                     -> mods/406_new_starfields
   Nexus ID: 43246 | URL: https://www.nexusmods.com/morrowind/mods/43246?tab=files
+  Files: main file. Extractor takes "00 Core" + "01 Option 7 (100% Opacity)" (MOMW pick of 8 options).
 
 [NEED] 407 - Normal Maps for Morrowind          -> mods/407_normal_maps_for_morrowind
   Nexus ID: 45336 | URL: https://www.nexusmods.com/morrowind/mods/45336?tab=files
+  Files (separate module downloads): 01a Shacks docks and ships (Lysol compatible),
+         03 Telvanni, 04 Daedric, 05 Redoran, 07 Terrain, 08 Rocks, 09b Swirlwood (Ket's Swirlwood).
+         Skip 02, 06, plain 01/09.
+  Notes: extractor deletes the 4 known-bad _nh.dds; settings.cfg needs the four "auto use ... maps = true".
 
 [NEED] 408 - Normal Maps for Everything         -> mods/408_normal_maps_for_everything
   Nexus ID: 52567 | URL: https://www.nexusmods.com/morrowind/mods/52567?tab=files
-  Notes: extractor copies only MET / Atlas / Tamriel_Data / OAAB modules.
-         Delete known-bad _n.dds files per MOMW usage notes.
+  Files (of ~48): Vanilla Textures Normal Mapped (01 + 02 inside), Atlas Textures Normal Mapped
+         (03 MET inside, not 01), Morrowind Enhanced Textures Normal Mapped,
+         OAAB Data Textures Normal Mapped, TR_PC_SHOTN Normal Mapped (if still listed).
+  Notes: extractor allowlists exactly those; Hall of Justice stays out (pending TR 26.08 check).
 
 [NEED] 409 - Glow in the Dahrk Normal Specular PBR Maps -> mods/409_gitd_normal_pbr
   Nexus ID: 58029 | URL: https://www.nexusmods.com/morrowind/mods/58029?tab=files
+  Files: main file (single). Needs GitD "01 Hi Res Window Texture Replacer" (202).
 
 [NEED] 410 - Facelift for Tamriel Data          -> mods/410_facelift_tamriel_data
   Nexus ID: 53935 | URL: https://www.nexusmods.com/morrowind/mods/53935?tab=files
+  Files: BOTH main files — Facelift_TR_Meshes + Facelift_TR_Textures.
   Notes: replaces the deferred MacKom plan; pairs with Familiar Faces.
 
 [NEED] 411 - Morrowind Interiors Project        -> mods/411_morrowind_interiors_project
   Nexus ID: 52237 | URL: https://www.nexusmods.com/morrowind/mods/52237?tab=files
+  Files: main file + optional "Bloodmoon" file.
+  Notes: content= MorrowindInteriorsProject.ESP, _Bloodmoon.ESP, _TR.ESP (after TR_Mainland.esm).
 
 [NEED] 412 - Better Waterfalls                  -> mods/412_better_waterfalls
   Nexus ID: 45424 | URL: https://www.nexusmods.com/morrowind/mods/45424?tab=files
-[NEED] 413 - Waterfalls Tweaks                  -> mods/413_waterfalls_tweaks
+  Files: main file. Extractor takes "00 Core" + "02 Tamriel Rebuilt Water"; skips 01.
+[NEED] 413 - Waterfalls Tweaks (optional)       -> mods/413_waterfalls_tweaks
   Nexus ID: 46271 | URL: https://www.nexusmods.com/morrowind/mods/46271?tab=files
+  Files: main file. Notes: enable exactly ONE of its 3 ESPs (default "Waterfalls Tweaks.esp"). Not in any MOMW list.
 [NEED] 414 - OpenMW More Dynamic Water Meshes   -> mods/414_more_dynamic_water_meshes
   Nexus ID: 55392 | URL: https://www.nexusmods.com/morrowind/mods/55392?tab=files
+  Files: main file (single).
 [NEED] 415 - Improved Lights for All Shaders    -> mods/415_improved_lights_all_shaders
   Nexus ID: 51463 | URL: https://www.nexusmods.com/morrowind/mods/51463?tab=files
-  Notes: set [Shaders] clamp lighting = false.
+  Files: main file. Extractor takes "00 Core" + "01 Smoke and Steam Emitters".
+  Notes: [Shaders] clamp lighting = false (in config/settings-tuning.cfg).
 [NEED] 416 - Kirel's Interior Weather           -> mods/416_kirels_interior_weather
   Nexus ID: 49278 | URL: https://www.nexusmods.com/morrowind/mods/49278?tab=files
-[NEED] 417 - OAAB Saplings + OpenMW groundcover patch -> mods/417_oaab_saplings
-  Nexus IDs: 50334 + 52351
+  Files: ONLY "Kirel's Interior Weather (Cleaned and updated with tes3cmd)". content= k_weather.esp
+[NEED] 417 - OAAB Saplings                      -> mods/417_oaab_saplings
+  Nexus ID: 50334 | URL: https://www.nexusmods.com/morrowind/mods/50334?tab=files
+  Files: main file. Extractor takes "00 Core" + "10 Openmw Groundcover Patch".
+  Notes: content= "OAAB_Saplings OpenMW Patch.ESP"; groundcover= OAAB_Saplings.esm.
+         Nexus 52351 (separate groundcover patch) is DEPRECATED — do not download.
 
 [NEED] 501 - LDM - Context Matters (Lucevar)    -> mods/501_ldm_context_matters
-  URL: search Nexus Morrowind for "LDM Context Matters"
-[NEED] 502 - Protective Guards (OpenMW)         -> mods/502_protective_guards
+  Nexus ID: 48273 | URL: https://www.nexusmods.com/morrowind/mods/48273?tab=files
+  Files: main file. content= "LDM - Context Matters 1.7.ESP" (after PfP + TR).
+[NEED] 502 - Protective Guards (OpenMW) 2.0     -> mods/502_protective_guards
   Nexus ID: 46992 | URL: https://www.nexusmods.com/morrowind/mods/46992?tab=files
-[NEED] 503 - Protective Guards - Factions and NPCs Protections -> mods/503_protective_guards_factions
-  Nexus ID: 54858 | URL: https://www.nexusmods.com/morrowind/mods/54858?tab=files
+  Files: main file (v2.0, 2026-08-31). content= protective_guards.omwscripts (renamed in 2.0).
+  Notes: has an in-game settings menu. MOMW pulled it from lists 2026-08-30 ahead of this release.
+[SKIP] 503 - Protective Guards - Factions and NPCs Protections (54858)
+  Notes: 1.x fork under the old script name; incompatible with 2.0 (two guard systems). Parked in
+         mod_files/_not_used. Re-check if a 2.x-compatible add-on appears.
 [NEED] 504 - Book Jackets Complete Collection HD -> mods/504_book_jackets_hd
   Nexus ID: 55402 | URL: https://www.nexusmods.com/morrowind/mods/55402?tab=files
+  Files: main file (book-jackets/00 Core). content= book-jackets.esp
+  Optional: "OAABBookJackets" file from Various Mods and Patches (Nexus 56176)
+            -> content= OAAB_BookJackets.omwaddon after OAAB_Data.esm + book-jackets.esp.
 
 [AUTO] 505-513 - GitLab Lua QoL mods (no download needed): ./update_gitlab_mods.sh qol
   505 UI Modes, 506 Pause Control, 507 Friendly Autosave, 508 Quickselect,
