@@ -370,3 +370,4 @@ newest additions first), or restore the A1 backup's `config/openmw.cfg`.
 | Menus at 1000+ FPS, GPU screaming | no framerate limit | `[Video] framerate limit = <refresh>` |
 | Lua mod does nothing | no `content=<name>.omwscripts` line | `./update_gitlab_mods.sh` prints the exact line |
 | Old save loads weird after TR upgrade | expected | new character; or console-fix per TR notes |
+| Bought item vanishes (gold taken), or only ONE of a pair; same items every time; console `AddItem` doesn't stick | **OpenMW 0.50 bug #8955** — restocking merchant stock shares an object id with your copy, so a Lua `Item:remove()` on the merchant's stack deletes yours too | Fixed in **0.51.0**: `flatpak update org.openmw.OpenMW`, confirm with `flatpak info`. Verify in-game with `player->GetItemCount "repair_journeyman_01"` before/after buying |
