@@ -48,6 +48,7 @@ strip_quotes() {
 mapfile -t DATA_PATHS < <(grep '^data=' "$CFG" | sed 's/^data=//')
 mapfile -t CONTENT < <(grep '^content=' "$CFG" | sed 's/^content=//')
 mapfile -t ARCHIVES < <(grep '^fallback-archive=' "$CFG" | sed 's/^fallback-archive=//')
+mapfile -t GROUNDCOVER < <(grep '^groundcover=' "$CFG" | sed 's/^groundcover=//')
 
 echo "--- data= paths (${#DATA_PATHS[@]}) ---"
 GOOD_PATHS=()
@@ -107,6 +108,34 @@ done
 echo "  $FOUND of ${#CONTENT[@]} plugins resolved."
 echo ""
 
+echo "--- groundcover= plugins (${#GROUNDCOVER[@]}) ---"
+GFOUND=0
+declare -A GSEEN=()
+for plugin in "${GROUNDCOVER[@]}"; do
+    lower=$(printf '%s' "$plugin" | tr '[:upper:]' '[:lower:]')
+    if [[ -n "${GSEEN[$lower]:-}" ]]; then err "duplicate groundcover= entry: $plugin"; continue; fi
+    GSEEN[$lower]=1
+    if [[ -n "${SEEN[$lower]:-}" ]]; then
+        err "$plugin is in BOTH content= and groundcover= — grass plugins go in groundcover= only"
+    fi
+    if grep -qxF "$lower" "$INDEX_FILE"; then GFOUND=$((GFOUND + 1)); else err "groundcover= plugin not found in any data path: $plugin"; fi
+done
+if ((${#GROUNDCOVER[@]})); then
+    if ! awk '/^\[Groundcover\]/{s=1;next} /^\[/{s=0} s && /^enabled *= *true/{f=1} END{exit !f}' "$(dirname "$CFG")/settings.cfg" 2>/dev/null; then
+        err "groundcover= lines present but settings.cfg has no [Groundcover] enabled = true — no grass will render"
+    fi
+fi
+echo "  $GFOUND of ${#GROUNDCOVER[@]} groundcover plugins resolved."
+echo ""
+
+echo "--- master order (TES3 headers) ---"
+if [[ -x "$(dirname "$0")/check_masters.py" ]]; then
+    if ! python3 "$(dirname "$0")/check_masters.py" "$CFG"; then err "master-order problems above (a plugin loads before a master it needs)"; fi
+else
+    warn "check_masters.py not found next to this script — master order not verified"
+fi
+echo ""
+
 echo "--- fallback-archive= BSAs (${#ARCHIVES[@]}) ---"
 for bsa in "${ARCHIVES[@]}"; do
     lower=$(printf '%s' "$bsa" | tr '[:upper:]' '[:lower:]')
@@ -120,14 +149,59 @@ done
 echo "  checked."
 echo ""
 
-# Build-specific sanity: mods that ship .omwscripts need their content= line
-for scripts_name in harvest-lights.omwscripts distant-fixes-lua-edition.omwscripts; do
-    if grep -qxF "$scripts_name" "$INDEX_FILE" 2>/dev/null; then
-        if ! printf '%s\n' "${CONTENT[@]}" | tr '[:upper:]' '[:lower:]' | grep -qxF "$scripts_name"; then
-            warn "$scripts_name is installed but has no content= line — the mod is inert."
+# Build-specific sanity: every installed .omwscripts needs a content= line
+# (exception: go-home ships two variants, only one may be enabled).
+while IFS= read -r scripts_name; do
+    [[ -z "$scripts_name" ]] && continue
+    if ! printf '%s\n' "${CONTENT[@]}" | tr '[:upper:]' '[:lower:]' | grep -qxF "$scripts_name"; then
+        case "$scripts_name" in
+            go-home-locking-doors.omwscripts|*-fr.omwscripts) ;;   # go-home alternative / French variants
+            "cinematic boken dof.omwscripts") ;;                    # optional DoF script in the MOMW shader pack
+            *) warn "$scripts_name is installed but has no content= line — the mod is inert." ;;
+        esac
+    fi
+done < <(grep '\.omwscripts$' "$INDEX_FILE" 2>/dev/null)
+
+echo ""
+echo "--- OpenMW Flatpak + NVIDIA driver ---"
+if command -v flatpak >/dev/null 2>&1; then
+    omw_ver=$(flatpak info org.openmw.OpenMW 2>/dev/null | awk -F': *' '/^ *Version:/{print $2; exit}')
+    if [[ -z "$omw_ver" ]]; then
+        warn "org.openmw.OpenMW Flatpak not found for this user (native install? then ignore)"
+    else
+        echo "  OpenMW Flatpak version: $omw_ver"
+        if [[ "$(printf '%s\n0.51\n' "$omw_ver" | sort -V | head -1)" != "0.51" ]]; then
+            warn "OpenMW $omw_ver is older than 0.51 — run: flatpak update org.openmw.OpenMW"
         fi
     fi
-done
+    if command -v nvidia-smi >/dev/null 2>&1; then
+        drv=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -1 | tr -d ' ')
+        if [[ -n "$drv" ]]; then
+            ext="org.freedesktop.Platform.GL.nvidia-${drv//./-}"
+            echo "  Host NVIDIA driver: $drv  (Flatpak needs extension $ext)"
+            if flatpak list --runtime --columns=application 2>/dev/null | grep -qx "$ext"; then
+                echo "  Matching Flatpak NVIDIA GL extension is installed."
+            else
+                err "Flatpak NVIDIA GL extension '$ext' NOT installed — the classic 'worked last week, black screen tonight' failure after a host driver update. Fix: flatpak update   (or: flatpak install flathub $ext)"
+            fi
+            if (( ${drv%%.*} < 570 )); then
+                warn "Driver $drv is older than 570 — RTX 50-series (Blackwell) needs 570+."
+            fi
+        fi
+    else
+        echo "  nvidia-smi not found — skipping driver/extension match check."
+    fi
+else
+    echo "  flatpak not found — skipping (native OpenMW install?)."
+fi
+
+SETTINGS="$(dirname "$CFG")/settings.cfg"
+if [[ -f "$SETTINGS" ]]; then
+    if ! grep -qE '^\s*framerate limit\s*=' "$SETTINGS"; then
+        warn "settings.cfg has no 'framerate limit' — OpenMW runs uncapped (coil whine / heat in menus). See config/settings-tuning.cfg [Video]."
+    fi
+fi
+echo ""
 
 echo "=============================="
 echo "RESULT: $ERRORS error(s), $WARNINGS warning(s)"
