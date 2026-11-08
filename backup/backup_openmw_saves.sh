@@ -18,8 +18,8 @@ FLATPAK_APP="$HOME/.var/app/org.openmw.OpenMW"
 SAVES_DIR="$FLATPAK_APP/data/openmw/saves"
 CONFIG_DIR="$FLATPAK_APP/config/openmw"
 BACKUP_ROOT="$HOME/mods/morrowind/saves_backup_local"
-NAS_DEST=""            # empty = skip NAS sync. MUST be a dedicated directory:
-                       # the sync mirrors with --delete.
+NAS_DEST="" # empty = skip NAS sync. MUST be a dedicated directory:
+# the sync mirrors with --delete.
 KEEP_SNAPSHOTS=30
 LOCK_FILE="${XDG_RUNTIME_DIR:-/tmp}/openmw-backup.lock"
 
@@ -33,10 +33,13 @@ if ! flock -n 9; then
     exit 0
 fi
 
-command -v rsync >/dev/null 2>&1 || { echo "ERROR: rsync not found." >&2; exit 1; }
+command -v rsync >/dev/null 2>&1 || {
+    echo "ERROR: rsync not found." >&2
+    exit 1
+}
 
-if [[ ! -d "$SAVES_DIR" ]] || \
-   [[ -z "$(find "$SAVES_DIR" -mindepth 1 -name '*.omwsave' -print -quit 2>/dev/null)" ]]; then
+if [[ ! -d "$SAVES_DIR" ]] ||
+    [[ -z "$(find "$SAVES_DIR" -mindepth 1 -name '*.omwsave' -print -quit 2>/dev/null)" ]]; then
     echo "No saves found in $SAVES_DIR — nothing to back up."
     exit 0
 fi
@@ -63,7 +66,7 @@ ln -sfn "$SNAP_DIR" "$BACKUP_ROOT/latest"
 # Prune old snapshots (dirs named by timestamp; 'latest' is a symlink, untouched)
 mapfile -t SNAPSHOTS < <(find "$BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d -name '20*' | sort)
 COUNT=${#SNAPSHOTS[@]}
-if (( COUNT > KEEP_SNAPSHOTS )); then
+if ((COUNT > KEEP_SNAPSHOTS)); then
     echo "Pruning to newest $KEEP_SNAPSHOTS snapshots..."
     for old in "${SNAPSHOTS[@]:0:COUNT-KEEP_SNAPSHOTS}"; do
         echo "  removing $old"

@@ -6,7 +6,10 @@ insensitive, last data path wins like the VFS), parses the TES3 header, and
 reports any plugin whose master is missing or listed after it. .omwscripts
 entries are skipped. Exit 1 on problems. Called by check_setup.sh.
 """
-import os, re, struct, sys
+import os
+import re
+import struct
+import sys
 
 CFG = os.path.expanduser("~/.var/app/org.openmw.OpenMW/config/openmw/openmw.cfg")
 BASE = {"morrowind.esm", "tribunal.esm", "bloodmoon.esm"}

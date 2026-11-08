@@ -8,7 +8,12 @@ files first. --dry-run prints the plan without writing.
 
 STATUS: TESTING — YMMV.
 """
-import argparse, datetime, os, re, shutil, sys
+import argparse
+import datetime
+import os
+import re
+import shutil
+import sys
 
 HOME = os.path.expanduser("~")
 CFG_DIR = f"{HOME}/.var/app/org.openmw.OpenMW/config/openmw"

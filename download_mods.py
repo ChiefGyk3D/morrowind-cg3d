@@ -20,7 +20,15 @@ size are skipped. One request at a time with a polite delay; the API budget is
 
 STATUS: TESTING — YMMV.
 """
-import argparse, fnmatch, hashlib, json, os, sys, time, urllib.parse, urllib.request
+import argparse
+import fnmatch
+import hashlib
+import json
+import os
+import sys
+import time
+import urllib.parse
+import urllib.request
 
 API = "https://api.nexusmods.com/v1"
 HOME = os.path.expanduser("~")
