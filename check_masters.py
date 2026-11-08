@@ -6,7 +6,10 @@ insensitive, last data path wins like the VFS), parses the TES3 header, and
 reports any plugin whose master is missing or listed after it. .omwscripts
 entries are skipped. Exit 1 on problems. Called by check_setup.sh.
 """
-import os, re, struct, sys
+import os
+import re
+import struct
+import sys
 
 CFG = os.path.expanduser("~/.var/app/org.openmw.OpenMW/config/openmw/openmw.cfg")
 BASE = {"morrowind.esm", "tribunal.esm", "bloodmoon.esm"}
@@ -32,7 +35,8 @@ def masters_of(path):
 
 def main():
     cfg = sys.argv[1] if len(sys.argv) > 1 else CFG
-    lines = open(cfg, encoding="utf-8").read().split("\n")
+    with open(cfg, encoding="utf-8") as f:
+        lines = f.read().split("\n")
     data_dirs = [re.sub(r'^data="?|"?$', "", l) for l in lines if l.startswith("data=")]
     content = [l[8:].strip() for l in lines if l.startswith("content=")]
     # VFS view: filename (lower) -> path, later data dirs override earlier

@@ -1,0 +1,43 @@
+# Lint and static checks for the OpenMW setup repo: ruff, shellcheck, shfmt.
+# The jobs live in ChiefGyk3D/git-your-ship-together; this file only calls them.
+# Static checks only: nothing in this repository is ever executed by CI.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: ChiefGyk3D/git-your-ship-together/.github/workflows/python-ci.yml@9d6825dd4e0e4d524fca3733f416437bbd7851e1 # v1.31.0
+    permissions:
+      contents: read
+      id-token: write   # the callee's coverage job declares it, so the caller must allow it; that job is skipped here
+    with:
+      python-versions: '["3.13"]'
+      coverage-python-version: "3.13"
+      lint-python-version: "3.13"
+      # No dependencies are installed and no tests exist. The "test" is a byte-compile
+      # of every .py file (syntax check); it imports and runs none of them.
+      install-command: python -m pip --version
+      test-command: python -m compileall -q .
+      docker-build: false
+      egress-policy: block
+  shell:
+    uses: ChiefGyk3D/git-your-ship-together/.github/workflows/bash-ci.yml@9d6825dd4e0e4d524fca3733f416437bbd7851e1 # v1.31.0
+    permissions:
+      contents: read
+    with:
+      # shellcheck and shfmt only: no test-command, so no script is run.
+      workflow-lint: false   # the ci job above already lints the workflow files
+      egress-policy: block

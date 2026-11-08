@@ -33,8 +33,14 @@ echo ""
 ERRORS=0
 WARNINGS=0
 
-err()  { echo "  ERROR: $*";   ERRORS=$((ERRORS + 1)); }
-warn() { echo "  WARNING: $*"; WARNINGS=$((WARNINGS + 1)); }
+err() {
+    echo "  ERROR: $*"
+    ERRORS=$((ERRORS + 1))
+}
+warn() {
+    echo "  WARNING: $*"
+    WARNINGS=$((WARNINGS + 1))
+}
 
 # Strip a data= value: remove surrounding quotes. openmw.cfg escapes '&' and '"'
 # inside quoted values with '&' — flag those rather than mis-parse them.
@@ -79,8 +85,8 @@ echo ""
 INDEX_FILE=$(mktemp)
 trap 'rm -f "$INDEX_FILE"' EXIT
 if ((${#GOOD_PATHS[@]})); then
-    find "${GOOD_PATHS[@]}" -maxdepth 1 -type f -printf '%f\n' 2>/dev/null \
-        | tr '[:upper:]' '[:lower:]' | sort -u > "$INDEX_FILE"
+    find "${GOOD_PATHS[@]}" -maxdepth 1 -type f -printf '%f\n' 2>/dev/null |
+        tr '[:upper:]' '[:lower:]' | sort -u >"$INDEX_FILE"
 fi
 
 echo "--- content= plugins (${#CONTENT[@]}) ---"
@@ -96,8 +102,10 @@ for plugin in "${CONTENT[@]}"; do
     # Base game masters live in the Morrowind Data Files dir OpenMW registers
     # from its own config machinery; don't fail on them if not in data= paths.
     case "$lower" in
-        morrowind.esm|tribunal.esm|bloodmoon.esm)
-            FOUND=$((FOUND + 1)); continue ;;
+        morrowind.esm | tribunal.esm | bloodmoon.esm)
+            FOUND=$((FOUND + 1))
+            continue
+            ;;
     esac
     if grep -qxF "$lower" "$INDEX_FILE"; then
         FOUND=$((FOUND + 1))
@@ -113,7 +121,10 @@ GFOUND=0
 declare -A GSEEN=()
 for plugin in "${GROUNDCOVER[@]}"; do
     lower=$(printf '%s' "$plugin" | tr '[:upper:]' '[:lower:]')
-    if [[ -n "${GSEEN[$lower]:-}" ]]; then err "duplicate groundcover= entry: $plugin"; continue; fi
+    if [[ -n "${GSEEN[$lower]:-}" ]]; then
+        err "duplicate groundcover= entry: $plugin"
+        continue
+    fi
     GSEEN[$lower]=1
     if [[ -n "${SEEN[$lower]:-}" ]]; then
         err "$plugin is in BOTH content= and groundcover= — grass plugins go in groundcover= only"
@@ -140,7 +151,7 @@ echo "--- fallback-archive= BSAs (${#ARCHIVES[@]}) ---"
 for bsa in "${ARCHIVES[@]}"; do
     lower=$(printf '%s' "$bsa" | tr '[:upper:]' '[:lower:]')
     case "$lower" in
-        morrowind.bsa|tribunal.bsa|bloodmoon.bsa) continue ;;
+        morrowind.bsa | tribunal.bsa | bloodmoon.bsa) continue ;;
     esac
     if ! grep -qxF "$lower" "$INDEX_FILE"; then
         err "fallback-archive not found in any data path: $bsa"
@@ -155,8 +166,8 @@ while IFS= read -r scripts_name; do
     [[ -z "$scripts_name" ]] && continue
     if ! printf '%s\n' "${CONTENT[@]}" | tr '[:upper:]' '[:lower:]' | grep -qxF "$scripts_name"; then
         case "$scripts_name" in
-            go-home-locking-doors.omwscripts|*-fr.omwscripts) ;;   # go-home alternative / French variants
-            "cinematic boken dof.omwscripts") ;;                    # optional DoF script in the MOMW shader pack
+            go-home-locking-doors.omwscripts | *-fr.omwscripts) ;; # go-home alternative / French variants
+            "cinematic boken dof.omwscripts") ;;                   # optional DoF script in the MOMW shader pack
             *) warn "$scripts_name is installed but has no content= line — the mod is inert." ;;
         esac
     fi
@@ -184,7 +195,7 @@ if command -v flatpak >/dev/null 2>&1; then
             else
                 err "Flatpak NVIDIA GL extension '$ext' NOT installed — the classic 'worked last week, black screen tonight' failure after a host driver update. Fix: flatpak update   (or: flatpak install flathub $ext)"
             fi
-            if (( ${drv%%.*} < 570 )); then
+            if ((${drv%%.*} < 570)); then
                 warn "Driver $drv is older than 570 — RTX 50-series (Blackwell) needs 570+."
             fi
         fi
@@ -205,7 +216,7 @@ echo ""
 
 echo "=============================="
 echo "RESULT: $ERRORS error(s), $WARNINGS warning(s)"
-if (( ERRORS )); then
+if ((ERRORS)); then
     echo "Fix errors before launching — missing plugins/paths mean missing masters or assets in-game."
     exit 1
 fi
