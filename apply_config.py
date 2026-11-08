@@ -136,7 +136,8 @@ def backup(path):
 
 # ---- openmw.cfg -------------------------------------------------------------
 def apply_openmw_cfg(dry):
-    lines = open(OPENMW_CFG, encoding="utf-8").read().split("\n")
+    with open(OPENMW_CFG, encoding="utf-8") as f:
+        lines = f.read().split("\n")
     plan = []
 
     def data_line(rel):
@@ -214,7 +215,8 @@ def apply_openmw_cfg(dry):
 
     # Skies .IV fallbacks (only if Skies is installed)
     if nonempty_dir(f"{MODS}/405_skies_iv"):
-        fb = [l for l in open(SKIES_FALLBACKS, encoding="utf-8").read().split("\n") if l.startswith("fallback=")]
+        with open(SKIES_FALLBACKS, encoding="utf-8") as f:
+            fb = [l for l in f.read().split("\n") if l.startswith("fallback=")]
         missing = [l for l in fb if l not in lines]
         if missing:
             last_fb = max(i for i, l in enumerate(lines) if l.startswith("fallback="))
@@ -225,7 +227,8 @@ def apply_openmw_cfg(dry):
     print("openmw.cfg plan:"); print("\n".join(plan) or "  (no changes)")
     if not dry and plan:
         b = backup(OPENMW_CFG); print(f"  backup: {b}")
-        open(OPENMW_CFG, "w", encoding="utf-8").write("\n".join(lines))
+        with open(OPENMW_CFG, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
         print("  written.")
 
 # ---- settings.cfg -----------------------------------------------------------
@@ -245,9 +248,12 @@ def parse_ini(text):
     return sections, order
 
 def apply_settings(dry, refresh):
-    live_text = open(SETTINGS_CFG, encoding="utf-8").read()
+    with open(SETTINGS_CFG, encoding="utf-8") as f:
+        live_text = f.read()
     live, live_order = parse_ini(live_text)
-    tune, tune_order = parse_ini(open(TUNING, encoding="utf-8").read())
+    with open(TUNING, encoding="utf-8") as f:
+        tune_text = f.read()
+    tune, tune_order = parse_ini(tune_text)
     if refresh:
         tune.setdefault("Video", {})["framerate limit"] = str(refresh)
     plan = []
@@ -265,7 +271,8 @@ def apply_settings(dry, refresh):
         out = header
         for sec in live_order:
             out += f"[{sec}]\n" + "".join(f"{k} = {v}\n" for k, v in live[sec].items()) + "\n"
-        open(SETTINGS_CFG, "w", encoding="utf-8").write(out)
+        with open(SETTINGS_CFG, "w", encoding="utf-8") as f:
+            f.write(out)
         print("  written.")
 
 if __name__ == "__main__":
