@@ -47,8 +47,8 @@ fi
 # find_archive GLOB -> prints newest matching file in $ARCHIVES (empty if none)
 find_archive() {
     local glob="$1"
-    find "$ARCHIVES" -maxdepth 1 -type f -size +0 -iname "$glob" -not -iname '*.part' -not -iname '*.crdownload' -printf '%T@ %p\n' 2>/dev/null \
-        | sort -rn | head -1 | cut -d' ' -f2-
+    find "$ARCHIVES" -maxdepth 1 -type f -size +0 -iname "$glob" -not -iname '*.part' -not -iname '*.crdownload' -printf '%T@ %p\n' 2>/dev/null |
+        sort -rn | head -1 | cut -d' ' -f2-
 }
 
 # have_archive GLOB LABEL [optional]
@@ -86,8 +86,8 @@ extract_any() {
     local archive="$1" dest="$2"
     mkdir -p "$dest"
     case "${archive,,}" in
-        *.rar) unrar x -o+ "$archive" "$dest/" > /dev/null 2>&1 || true ;;
-        *)     7z x "$archive" -o"$dest" -r -y > /dev/null 2>&1 || true ;;
+        *.rar) unrar x -o+ "$archive" "$dest/" >/dev/null 2>&1 || true ;;
+        *) 7z x "$archive" -o"$dest" -r -y >/dev/null 2>&1 || true ;;
     esac
 }
 
@@ -101,7 +101,7 @@ extract_fomod() {
     tmpdir=$(mktemp -d)
     mkdir -p "$target"
     for prefix in "$@"; do
-        7z x "$archive" -o"$tmpdir" "${prefix}/*" -r -y > /dev/null 2>&1 || true
+        7z x "$archive" -o"$tmpdir" "${prefix}/*" -r -y >/dev/null 2>&1 || true
         if [[ -d "$tmpdir/$prefix/Data Files" ]]; then
             # module wraps its data (TR 26.08: "00 Core/Data Files/...")
             cp -a "$tmpdir/$prefix/Data Files"/. "$target"/
@@ -150,8 +150,8 @@ is_data_root() {
     find "$d" -maxdepth 1 \( -iname meshes -o -iname textures -o -iname icons -o -iname fonts \
         -o -iname sound -o -iname music -o -iname splash -o -iname bookart -o -iname shaders \
         -o -iname scripts -o -iname l10n -o -iname '*.esp' -o -iname '*.esm' \
-        -o -iname '*.omwaddon' -o -iname '*.omwscripts' -o -iname '*.bsa' \) -print -quit 2>/dev/null \
-        | grep -q .
+        -o -iname '*.omwaddon' -o -iname '*.omwscripts' -o -iname '*.bsa' \) -print -quit 2>/dev/null |
+        grep -q .
 }
 
 # extract_auto ARCHIVE TARGET
@@ -168,10 +168,11 @@ is_data_root() {
 # Every matching archive is extracted into TARGET (sorted by name). Missing
 # is a NOTE (all callers are optional additions). Returns 1 if nothing found.
 extract_all() {
-    local glob="$1" label="$2" target="$3"; shift 3
+    local glob="$1" label="$2" target="$3"
+    shift 3
     local -a found
     mapfile -t found < <(find "$ARCHIVES" -maxdepth 1 -type f -size +0 -iname "$glob" -not -iname '*.part' -not -iname '*.crdownload' | sort)
-    if (( ${#found[@]} == 0 )); then
+    if ((${#found[@]} == 0)); then
         echo "  (not downloaded — skipping; pattern: $glob)"
         NOTES+=("$label: not downloaded (looked for '$glob')")
         return 1
@@ -188,7 +189,7 @@ extract_all() {
 extract_auto() {
     local archive="$1" target="$2"
     shift 2
-    local extra_globs=("$@")   # optional FOMOD folder globs to ALSO copy
+    local extra_globs=("$@") # optional FOMOD folder globs to ALSO copy
     local tmpdir root
     tmpdir=$(mktemp -d)
     mkdir -p "$target"
@@ -199,7 +200,7 @@ extract_auto() {
     while :; do
         local entries
         mapfile -t entries < <(find "$root" -mindepth 1 -maxdepth 1 -not -name '__MACOSX' -not -name 'fomod')
-        if (( ${#entries[@]} == 1 )) && [[ -d "${entries[0]}" ]] && ! is_data_root "$root"; then
+        if ((${#entries[@]} == 1)) && [[ -d "${entries[0]}" ]] && ! is_data_root "$root"; then
             root="${entries[0]}"
         else
             break
@@ -209,7 +210,7 @@ extract_auto() {
     if [[ -d "$root/Data Files" ]]; then
         echo "  Layout: 'Data Files/' wrapper"
         cp -a "$root/Data Files"/. "$target"/
-    elif compgen -G "$root/00 *" > /dev/null; then
+    elif compgen -G "$root/00 *" >/dev/null; then
         echo "  Layout: FOMOD-style numbered folders"
         local core optional=()
         for core in "$root"/00\ *; do
@@ -225,17 +226,20 @@ extract_auto() {
                 # shellcheck disable=SC2053
                 [[ "$(basename "$d")" == $g ]] && want=1
             done
-            if (( want )); then
+            if ((want)); then
                 echo "    + $(basename "$d") (requested module)"
                 cp -a "$d"/. "$target"/
             else
                 optional+=("$(basename "$d")")
             fi
         done
-        if (( ${#optional[@]} )); then
+        if ((${#optional[@]})); then
             echo "    optional folders NOT copied (review readme, copy manually if wanted):"
             printf '      - %s\n' "${optional[@]}"
-            NOTES+=("$(basename "$target"): optional FOMOD folders not copied: $(IFS=';'; echo "${optional[*]}")")
+            NOTES+=("$(basename "$target"): optional FOMOD folders not copied: $(
+                IFS=';'
+                echo "${optional[*]}"
+            )")
         fi
     elif is_data_root "$root"; then
         echo "  Layout: flat (data at root)"
@@ -260,7 +264,7 @@ echo "=========================================="
 
 echo "[1/21] 001 Patch for Purists (flat structure)..."
 if have_archive "Patch for Purists*[- ]45096[- ]*" "001 Patch for Purists"; then
-    7z x "$ARCHIVE" -o"$MODS/001_patch_for_purists" -r -y > /dev/null 2>&1 || true
+    7z x "$ARCHIVE" -o"$MODS/001_patch_for_purists" -r -y >/dev/null 2>&1 || true
     verify "$MODS/001_patch_for_purists" "001 Patch for Purists"
     echo "  Done."
 fi
@@ -272,7 +276,7 @@ echo "[2/21] 002 UMOPP 3.3.0 — merged compatibility (No Firemoth) + Siege at F
 # + Siege at Firemoth.esp + UMOPP_BetterArmorPatch.esp (Better Morrowind Armor only — not enabled).
 # content= "Unofficial Morrowind Official Plugins Patched.ESP" + "Siege at Firemoth.esp"
 if have_archive "Unofficial Morrowind Official Plugins Patched*[- ]43931[- ]*" "002 UMOPP"; then
-    rm -rf "$MODS/002_umopp"   # 3.2.1 layout left individual ESPs behind; start clean
+    rm -rf "$MODS/002_umopp" # 3.2.1 layout left individual ESPs behind; start clean
     extract_fomod "$ARCHIVE" "$MODS/002_umopp" "000 MANUAL INSTALL ONLY USE THIS FOLDER 000"
     verify "$MODS/002_umopp" "002 UMOPP"
     echo "  Done."
@@ -280,7 +284,7 @@ fi
 
 echo "[3/21] 003 Expansion Delay (flat structure)..."
 if have_archive "Expansion Delay*[- ]47588[- ]*" "003 Expansion Delay"; then
-    7z x "$ARCHIVE" -o"$MODS/003_expansion_delay" -r -y > /dev/null 2>&1 || true
+    7z x "$ARCHIVE" -o"$MODS/003_expansion_delay" -r -y >/dev/null 2>&1 || true
     verify "$MODS/003_expansion_delay" "003 Expansion Delay"
     echo "  Done."
 fi
@@ -294,11 +298,16 @@ fi
 
 echo "[5/21] 005 Tamriel_Data HD (00 Data Files + 01 Normal Maps; Nexus 59927, old page 44537)..."
 TD_ARCHIVE=""
-for g in "*[- ]59927[- ]*" "Tamriel Data (HD)*[- ]44537[- ]*"; do TD_ARCHIVE=$(find_archive "$g"); [[ -n "$TD_ARCHIVE" ]] && break; done
+for g in "*[- ]59927[- ]*" "Tamriel Data (HD)*[- ]44537[- ]*"; do
+    TD_ARCHIVE=$(find_archive "$g")
+    [[ -n "$TD_ARCHIVE" ]] && break
+done
 if [[ -z "$TD_ARCHIVE" ]]; then
-    echo "  MISSING ARCHIVE: Tamriel_Data HD (Nexus 59927) — skipping."; ISSUES+=("005 Tamriel Data: archive not found (looked for '*-59927-*' / 'Tamriel Data (HD)-44537-*')")
+    echo "  MISSING ARCHIVE: Tamriel_Data HD (Nexus 59927) — skipping."
+    ISSUES+=("005 Tamriel Data: archive not found (looked for '*-59927-*' / 'Tamriel Data (HD)-44537-*')")
 else
-    ARCHIVE="$TD_ARCHIVE"; echo "  Archive: $(basename "$ARCHIVE")"
+    ARCHIVE="$TD_ARCHIVE"
+    echo "  Archive: $(basename "$ARCHIVE")"
     extract_fomod "$ARCHIVE" "$MODS/005_tamriel_data" "00 Data Files" "01 Data Files - Normal Maps"
     verify "$MODS/005_tamriel_data" "005 Tamriel Data"
     echo "  Done."
@@ -306,7 +315,7 @@ fi
 
 echo "[6/21] 006 Tamriel Rebuilt (newest download wins: 26.08 'Poison Song')..."
 if have_archive "Tamriel Rebuilt*[- ]42145[- ]*" "006 Tamriel Rebuilt"; then
-    extract_fomod "$ARCHIVE" "$MODS/006_tamriel_rebuilt" "00 Core" "01 Faction Integration"   # MOMW TO/EV: both; content= TR_Factions.esp
+    extract_fomod "$ARCHIVE" "$MODS/006_tamriel_rebuilt" "00 Core" "01 Faction Integration" # MOMW TO/EV: both; content= TR_Factions.esp
     verify "$MODS/006_tamriel_rebuilt" "006 Tamriel Rebuilt"
     echo "  Done."
 fi
@@ -325,7 +334,7 @@ fi
 echo "[8/21] 102 Harvest Lights — handled by update_gitlab_mods.sh (pulls latest tag from GitLab)."
 if [[ -f "$ARCHIVES/harvest-lights.zip" && ! -f "$MODS/102_harvest_lights/version.txt" ]]; then
     echo "  Found a manual harvest-lights.zip and no updater install — extracting it as a fallback."
-    7z x "$ARCHIVES/harvest-lights.zip" -o"$MODS/102_harvest_lights" -r -y > /dev/null 2>&1 || true
+    7z x "$ARCHIVES/harvest-lights.zip" -o"$MODS/102_harvest_lights" -r -y >/dev/null 2>&1 || true
     verify "$MODS/102_harvest_lights" "102 Harvest Lights"
 fi
 
@@ -338,7 +347,7 @@ fi
 
 echo "[10/21] 104 Project Atlas..."
 if have_archive "Project Atlas*[- ]45399[- ]*" "104 Project Atlas"; then
-    extract_fomod "$ARCHIVE" "$MODS/104_project_atlas" "00 Core" "01 Textures - MET" "02 Urns - Smoothed" "03 Redware - Smoothed" "06 Glow in the Dahrk Patch" "07 Graphic Herbalism Patch" "08 ILFAS Patch"   # MOMW Starter Pack (no BCOM) set; ILFAS = Improved Lights (415)
+    extract_fomod "$ARCHIVE" "$MODS/104_project_atlas" "00 Core" "01 Textures - MET" "02 Urns - Smoothed" "03 Redware - Smoothed" "06 Glow in the Dahrk Patch" "07 Graphic Herbalism Patch" "08 ILFAS Patch" # MOMW Starter Pack (no BCOM) set; ILFAS = Improved Lights (415)
     verify "$MODS/104_project_atlas" "104 Project Atlas"
     echo "  Done."
 fi
@@ -362,7 +371,7 @@ fi
 echo "[12/21] 106 Familiar Faces..."
 if have_archive "Familiar Faces*[- ]50093[- ]*" "106 Familiar Faces"; then
     tmpdir=$(mktemp -d)
-    7z x "$ARCHIVE" -o"$tmpdir" -r -y > /dev/null 2>&1 || true
+    7z x "$ARCHIVE" -o"$tmpdir" -r -y >/dev/null 2>&1 || true
     # Copy main Meshes/ folder (at root), skip optional subfolder
     mkdir -p "$MODS/106_familiar_faces"
     if [[ -d "$tmpdir/Meshes" ]]; then
@@ -440,7 +449,7 @@ fi
 echo "[19/21] 207 Distant Fixes Lua Edition — handled by update_gitlab_mods.sh (pulls latest tag from GitLab)."
 if [[ -f "$ARCHIVES/distant-fixes-lua-edition.zip" && ! -f "$MODS/207_distant_fixes_lua/version.txt" ]]; then
     echo "  Found a manual zip and no updater install — extracting it as a fallback."
-    7z x "$ARCHIVES/distant-fixes-lua-edition.zip" -o"$MODS/207_distant_fixes_lua" -r -y > /dev/null 2>&1 || true
+    7z x "$ARCHIVES/distant-fixes-lua-edition.zip" -o"$MODS/207_distant_fixes_lua" -r -y >/dev/null 2>&1 || true
     verify "$MODS/207_distant_fixes_lua" "207 Distant Fixes Lua"
 fi
 
@@ -527,7 +536,8 @@ if ARCHIVE=$(find_archive "*[- ]46733[- ]*") && [[ -n "$ARCHIVE" ]]; then
     verify "$MODS/403_remiros_groundcover" "403 Remiros Groundcover"
     echo "  Done."
 else
-    echo "  (not downloaded — skipping; pattern: *[- ]46733[- ]*)"; NOTES+=("403 Remiros Groundcover: not downloaded (looked for '*[- ]46733[- ]*')")
+    echo "  (not downloaded — skipping; pattern: *[- ]46733[- ]*)"
+    NOTES+=("403 Remiros Groundcover: not downloaded (looked for '*[- ]46733[- ]*')")
 fi
 
 echo "[ADD] 404 Remiros Groundcover Textures Improvement..."
@@ -537,28 +547,39 @@ echo "[ADD] 405 Skies .IV (\"Skies - .IV\" + Particles merged; raindrop files re
 # MOMW: use "Skies - .IV" + "Particles", skip "Skies - Vanilla". Folders carry no
 # 00/01 prefixes so extract_auto can't pick them — merge the two wanted ones here.
 mapfile -t SKIES_ARCHIVES < <(find "$ARCHIVES" -maxdepth 1 -type f -size +0 -iname "*[- ]43311[- ]*" -not -iname '*.part' | sort)
-if (( ${#SKIES_ARCHIVES[@]} == 0 )); then
-    echo "  (not downloaded — skipping; pattern: *-43311-*)"; NOTES+=("405 Skies IV: not downloaded (looked for '*-43311-*')")
+if ((${#SKIES_ARCHIVES[@]} == 0)); then
+    echo "  (not downloaded — skipping; pattern: *-43311-*)"
+    NOTES+=("405 Skies IV: not downloaded (looked for '*-43311-*')")
 else
-    T="$MODS/405_skies_iv"; mkdir -p "$T"
+    T="$MODS/405_skies_iv"
+    mkdir -p "$T"
     for ARCHIVE in "${SKIES_ARCHIVES[@]}"; do
         echo "  Archive: $(basename "$ARCHIVE")"
-        tmpdir=$(mktemp -d); extract_any "$ARCHIVE" "$tmpdir"
+        tmpdir=$(mktemp -d)
+        extract_any "$ARCHIVE" "$tmpdir"
         got=0
         while IFS= read -r -d '' d; do
             b=$(basename "$d")
             case "$b" in
-                "Skies - .IV"|Particles) echo "    + $b"; cp -a "$d"/. "$T"/; got=1 ;;
+                "Skies - .IV" | Particles)
+                    echo "    + $b"
+                    cp -a "$d"/. "$T"/
+                    got=1
+                    ;;
                 "Skies - Vanilla") echo "    - $b (skipped: alternative look)" ;;
             esac
         done < <(find "$tmpdir" -mindepth 1 -maxdepth 3 -type d \( -name "Skies - .IV" -o -name "Particles" -o -name "Skies - Vanilla" \) -print0 | sort -z)
-        if (( ! got )); then echo "  WARNING: expected 'Skies - .IV' / 'Particles' folders not found — extracted as-is."; cp -a "$tmpdir"/. "$T"/; ISSUES+=("405 Skies IV: unexpected layout, sort manually"); fi
+        if ((! got)); then
+            echo "  WARNING: expected 'Skies - .IV' / 'Particles' folders not found — extracted as-is."
+            cp -a "$tmpdir"/. "$T"/
+            ISSUES+=("405 Skies IV: unexpected layout, sort manually")
+        fi
         rm -rf "$tmpdir"
     done
     # MOMW usage notes: these two files break on OpenMW
     find "$T" -iname 'raindrop.nif' -print -delete | sed 's/^/    removed: /'
     find "$T" -iname 'tx_raindrop_01.dds' -print -delete | sed 's/^/    removed: /'
-    find "$T" -maxdepth 1 -type f -iname 'merge these into*' -delete   # empty marker files from the zip
+    find "$T" -maxdepth 1 -type f -iname 'merge these into*' -delete # empty marker files from the zip
     verify "$T" "405 Skies IV"
     NOTES+=("405: append config/openmw-fallbacks-skies-iv.cfg (10 cloud-speed lines) to openmw.cfg")
     echo "  Done."
@@ -574,32 +595,42 @@ echo "[ADD] 407 Normal Maps for Morrowind (modules per MOMW: 01a/03/04/05/07/08/
 # recommends for a MET/Atlas stack, then drop the four known-bad _nh.dds files.
 NMFM_WANT=("01a*" "03 *" "04 *" "05 *" "07 *" "08 *" "09b*")
 mapfile -t NMFM_ARCHIVES < <(find "$ARCHIVES" -maxdepth 1 -type f -size +0 -iname "*[- ]45336[- ]*" -not -iname '*.part' | sort)
-if (( ${#NMFM_ARCHIVES[@]} == 0 )); then
+if ((${#NMFM_ARCHIVES[@]} == 0)); then
     echo "  (not downloaded — skipping; pattern: *[- ]45336[- ]*)"
     NOTES+=("407 Normal Maps for Morrowind: not downloaded (looked for '*[- ]45336[- ]*')")
 else
-    T="$MODS/407_normal_maps_for_morrowind"; mkdir -p "$T"
+    T="$MODS/407_normal_maps_for_morrowind"
+    mkdir -p "$T"
     for ARCHIVE in "${NMFM_ARCHIVES[@]}"; do
         echo "  Archive: $(basename "$ARCHIVE")"
-        tmpdir=$(mktemp -d); extract_any "$ARCHIVE" "$tmpdir"; root="$tmpdir"
+        tmpdir=$(mktemp -d)
+        extract_any "$ARCHIVE" "$tmpdir"
+        root="$tmpdir"
         while :; do
             mapfile -t entries < <(find "$root" -mindepth 1 -maxdepth 1 -not -name '__MACOSX' -not -name 'fomod')
-            if (( ${#entries[@]} == 1 )) && [[ -d "${entries[0]}" ]] && ! is_data_root "$root" \
-               && [[ ! "$(basename "${entries[0]}")" =~ ^[0-9][0-9][a-z]?\  ]]; then root="${entries[0]}"; else break; fi
+            if ((${#entries[@]} == 1)) && [[ -d "${entries[0]}" ]] && ! is_data_root "$root" &&
+                [[ ! "$(basename "${entries[0]}")" =~ ^[0-9][0-9][a-z]?\  ]]; then root="${entries[0]}"; else break; fi
         done
-        if compgen -G "$root/[0-9][0-9]*" > /dev/null; then
+        if compgen -G "$root/[0-9][0-9]*" >/dev/null; then
             echo "  Layout: numbered module folders"
             skipped=()
             for d in "$root"/[0-9][0-9]*/; do
-                d=${d%/}; b=$(basename "$d"); want=0
+                d=${d%/}
+                b=$(basename "$d")
+                want=0
                 for g in "${NMFM_WANT[@]}"; do [[ "$b" == $g ]] && want=1; done
-                if (( want )); then echo "    + $b"; cp -a "$d"/. "$T"/; else skipped+=("$b"); fi
+                if ((want)); then
+                    echo "    + $b"
+                    cp -a "$d"/. "$T"/
+                else skipped+=("$b"); fi
             done
-            (( ${#skipped[@]} )) && printf '    - skipped (not in MOMW list): %s\n' "${skipped[@]}"
+            ((${#skipped[@]})) && printf '    - skipped (not in MOMW list): %s\n' "${skipped[@]}"
         elif is_data_root "$root"; then
-            echo "  Layout: flat (single module download)"; cp -a "$root"/. "$T"/
+            echo "  Layout: flat (single module download)"
+            cp -a "$root"/. "$T"/
         else
-            echo "  WARNING: unrecognised layout — extracted as-is."; cp -a "$root"/. "$T"/
+            echo "  WARNING: unrecognised layout — extracted as-is."
+            cp -a "$root"/. "$T"/
             ISSUES+=("407 Normal Maps for Morrowind: unrecognised layout in $(basename "$ARCHIVE")")
         fi
         rm -rf "$tmpdir"
@@ -629,49 +660,71 @@ NMFE_WANT=(
     "Tamriel*Data*Normal Mapped*"
 )
 NMFE_SKIP_REASON="not in our stack (see MOMW data paths); Hall of Justice pulled pending TR 26.08"
-nmfe_want() { local g; for g in "${NMFE_WANT[@]}"; do [[ "$1" == $g ]] && return 0; done; return 1; }
+nmfe_want() {
+    local g
+    for g in "${NMFE_WANT[@]}"; do [[ "$1" == $g ]] && return 0; done
+    return 1
+}
 # nmfe_take DIR TARGET — copy a module dir; recurse into wanted numbered sub-folders
 nmfe_take() {
     local d="$1" T="$2" sub b
-    if compgen -G "$d/[0-9][0-9] *" > /dev/null; then
+    if compgen -G "$d/[0-9][0-9] *" >/dev/null; then
         for sub in "$d"/[0-9][0-9]\ */; do
-            sub=${sub%/}; b=$(basename "$sub")
-            if nmfe_want "$b"; then echo "      + $b"; cp -a "$sub"/. "$T"/; else echo "      - $b (skipped)"; fi
+            sub=${sub%/}
+            b=$(basename "$sub")
+            if nmfe_want "$b"; then
+                echo "      + $b"
+                cp -a "$sub"/. "$T"/
+            else echo "      - $b (skipped)"; fi
         done
     else
         cp -a "$d"/. "$T"/
     fi
 }
 mapfile -t NMFE_ARCHIVES < <(find "$ARCHIVES" -maxdepth 1 -type f -size +0 -iname "*[- ]52567[- ]*" -not -iname '*.part' | sort)
-if (( ${#NMFE_ARCHIVES[@]} == 0 )); then
+if ((${#NMFE_ARCHIVES[@]} == 0)); then
     echo "  (not downloaded — skipping; pattern: *[- ]52567[- ]*)"
     NOTES+=("408 Normal Maps for Everything: not downloaded (looked for '*[- ]52567[- ]*')")
 else
-    T="$MODS/408_normal_maps_for_everything"; mkdir -p "$T"; copied=0
+    T="$MODS/408_normal_maps_for_everything"
+    mkdir -p "$T"
+    copied=0
     for ARCHIVE in "${NMFE_ARCHIVES[@]}"; do
         echo "  Archive: $(basename "$ARCHIVE")"
-        tmpdir=$(mktemp -d); extract_any "$ARCHIVE" "$tmpdir"; root="$tmpdir"
+        tmpdir=$(mktemp -d)
+        extract_any "$ARCHIVE" "$tmpdir"
+        root="$tmpdir"
         # unwrap non-module wrapper folders (stop at a module name we know, or a data root)
         while :; do
             mapfile -t entries < <(find "$root" -mindepth 1 -maxdepth 1 -not -name '__MACOSX' -not -name 'fomod')
-            if (( ${#entries[@]} == 1 )) && [[ -d "${entries[0]}" ]] && ! is_data_root "$root" \
-               && ! nmfe_want "$(basename "${entries[0]}")"; then root="${entries[0]}"; else break; fi
+            if ((${#entries[@]} == 1)) && [[ -d "${entries[0]}" ]] && ! is_data_root "$root" &&
+                ! nmfe_want "$(basename "${entries[0]}")"; then root="${entries[0]}"; else break; fi
         done
         if is_data_root "$root"; then
             # single-module download with data at root: trust the archive name
-            b=$(basename "$ARCHIVE"); b=${b%%-52567-*}; b=${b#Normal Maps for Everything}; b=${b# - }; b=${b# }
-            if [[ -z "$b" ]] || nmfe_want "$b"; then echo "    + (flat) ${b:-unnamed}"; cp -a "$root"/. "$T"/; copied=$((copied+1))
+            b=$(basename "$ARCHIVE")
+            b=${b%%-52567-*}
+            b=${b#Normal Maps for Everything}
+            b=${b# - }
+            b=${b# }
+            if [[ -z "$b" ]] || nmfe_want "$b"; then
+                echo "    + (flat) ${b:-unnamed}"
+                cp -a "$root"/. "$T"/
+                copied=$((copied + 1))
             else echo "    - (flat) $b (skipped: $NMFE_SKIP_REASON)"; fi
         else
             while IFS= read -r -d '' d; do
                 b=$(basename "$d")
-                if nmfe_want "$b"; then echo "    + $b"; nmfe_take "$d" "$T"; copied=$((copied+1))
+                if nmfe_want "$b"; then
+                    echo "    + $b"
+                    nmfe_take "$d" "$T"
+                    copied=$((copied + 1))
                 else echo "    - $b (skipped: $NMFE_SKIP_REASON)"; fi
             done < <(find "$root" -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
         fi
         rm -rf "$tmpdir"
     done
-    (( copied == 0 )) && ISSUES+=("408 Normal Maps for Everything: no modules matched our stack — check archive names")
+    ((copied == 0)) && ISSUES+=("408 Normal Maps for Everything: no modules matched our stack — check archive names")
     verify "$T" "408 Normal Maps for Everything"
     NOTES+=("408: needs the same four settings.cfg [Shaders] 'auto use ... maps = true' lines as 407")
     echo "  Done."

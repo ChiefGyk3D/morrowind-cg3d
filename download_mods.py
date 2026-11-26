@@ -20,7 +20,15 @@ size are skipped. One request at a time with a polite delay; the API budget is
 
 STATUS: TESTING — YMMV.
 """
-import argparse, fnmatch, hashlib, json, os, sys, time, urllib.parse, urllib.request
+import argparse
+import fnmatch
+import hashlib
+import json
+import os
+import sys
+import time
+import urllib.parse
+import urllib.request
 
 API = "https://api.nexusmods.com/v1"
 HOME = os.path.expanduser("~")
@@ -37,7 +45,8 @@ DEFAULT_CATEGORIES = {"main", "update", "optional", "misc"}
 def load_key():
     k = os.environ.get("NEXUS_API_KEY", "").strip()
     if not k and os.path.isfile(KEY_FILE):
-        k = open(KEY_FILE, encoding="utf-8").read().strip()
+        with open(KEY_FILE, encoding="utf-8") as f:
+            k = f.read().strip()
     if not k:
         sys.exit(f"No API key: put it in {KEY_FILE} (chmod 600) or export NEXUS_API_KEY")
     return k
@@ -139,7 +148,8 @@ def main():
     ap.add_argument("--manifest", default=MANIFEST)
     a = ap.parse_args()
 
-    m = json.load(open(a.manifest, encoding="utf-8"))
+    with open(a.manifest, encoding="utf-8") as f:
+        m = json.load(f)
     os.makedirs(a.dest, exist_ok=True)
     nx = Nexus(load_key(), m.get("game", "morrowind"))
 

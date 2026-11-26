@@ -21,7 +21,10 @@ MODS="${MODS_DIR:-$HOME/mods/morrowind/mods}"
 GITLAB_API="https://gitlab.com/api/v4"
 GROUP="modding-openmw"
 
-command -v curl >/dev/null 2>&1 || { echo "ERROR: curl not found." >&2; exit 1; }
+command -v curl >/dev/null 2>&1 || {
+    echo "ERROR: curl not found." >&2
+    exit 1
+}
 
 # name | target folder | content= line(s) to add | group
 # (content lines are informational — printed at the end)
@@ -43,13 +46,13 @@ QOL_MODS=(
 
 # Repo-root entries that are build/site scaffolding, never mod content
 DENY=(web .git .gitignore .gitlab-ci.yml .gitmodules .gitattributes .gitlab .vscode
-      .DS_Store Makefile pkg.sh build.sh update-all-submodules.sh)
+    .DS_Store Makefile pkg.sh build.sh update-all-submodules.sh)
 
 # Extractor fallback chain: 7z (build standard) -> unzip -> python3 zipfile
 extract_zip() {
     local zip="$1" dest="$2"
     if command -v 7z >/dev/null 2>&1; then
-        7z x "$zip" -o"$dest" -y > /dev/null
+        7z x "$zip" -o"$dest" -y >/dev/null
     elif command -v unzip >/dev/null 2>&1; then
         unzip -q "$zip" -d "$dest"
     elif command -v python3 >/dev/null 2>&1; then
@@ -62,8 +65,8 @@ extract_zip() {
 
 latest_tag() {
     local project_enc="$1"
-    curl -sfL --max-time 30 "$GITLAB_API/projects/$project_enc/repository/tags?per_page=1" \
-        | python3 -c "import json,sys; tags=json.load(sys.stdin); print(tags[0]['name'] if tags else '')"
+    curl -sfL --max-time 30 "$GITLAB_API/projects/$project_enc/repository/tags?per_page=1" |
+        python3 -c "import json,sys; tags=json.load(sys.stdin); print(tags[0]['name'] if tags else '')"
 }
 
 denied() {
@@ -107,7 +110,7 @@ update_mod() {
     fi
 
     mkdir -p "$target"
-    rm -rf "${target:?}"/*          # replace, so removed files don't linger
+    rm -rf "${target:?}"/* # replace, so removed files don't linger
     local entry copied=0
     for entry in "$repo_base"/* "$repo_base"/.[!.]*; do
         [[ -e "$entry" ]] || continue
@@ -115,7 +118,7 @@ update_mod() {
         cp -a "$entry" "$target/"
         copied=$((copied + 1))
     done
-    echo "Mod version: $tag" > "$target/version.txt"
+    echo "Mod version: $tag" >"$target/version.txt"
     rm -rf "$tmpdir"
 
     if ! find "$target" -maxdepth 1 -iname '*.omwscripts' -print -quit | grep -q .; then
@@ -131,7 +134,7 @@ INSTALLED=()
 run_set() {
     local spec name target content
     for spec in "$@"; do
-        IFS='|' read -r name target content <<< "$spec"
+        IFS='|' read -r name target content <<<"$spec"
         if update_mod "$name" "$MODS/$target"; then
             INSTALLED+=("$target  ->  content=$content")
         else
@@ -142,8 +145,8 @@ run_set() {
 
 case "$SELECT" in
     core) run_set "${CORE_MODS[@]}" ;;
-    qol)  run_set "${QOL_MODS[@]}" ;;
-    all)  run_set "${CORE_MODS[@]}" "${QOL_MODS[@]}" ;;
+    qol) run_set "${QOL_MODS[@]}" ;;
+    all) run_set "${CORE_MODS[@]}" "${QOL_MODS[@]}" ;;
     *)
         match=""
         for spec in "${CORE_MODS[@]}" "${QOL_MODS[@]}"; do
@@ -153,7 +156,8 @@ case "$SELECT" in
             echo "Unknown mod '$SELECT'. Known: $(printf '%s\n' "${CORE_MODS[@]}" "${QOL_MODS[@]}" | cut -d'|' -f1 | tr '\n' ' ')" >&2
             exit 1
         fi
-        run_set "$match" ;;
+        run_set "$match"
+        ;;
 esac
 
 echo ""
@@ -162,7 +166,8 @@ if ((${#INSTALLED[@]})); then
     echo "AND the matching content= line (Lua mods are inert without it):"
     printf '  %s\n' "${INSTALLED[@]}"
 fi
-if (( FAILED )); then
-    echo ""; echo "Done with errors — see above."
+if ((FAILED)); then
+    echo ""
+    echo "Done with errors — see above."
     exit 1
 fi
